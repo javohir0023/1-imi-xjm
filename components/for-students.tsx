@@ -27,13 +27,6 @@ export default function ForStudents() {
   return (
     <section id="students" className="py-20 md:py-32 bg-muted/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">O'quvchilar Uchun</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            O'quvchilarning akademik va shaxsiy rivojlanishi uchun zarur barcha resurslar
-          </p>
-        </div>
-
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {resources.map((resource, index) => {
             const Icon = resource.icon
@@ -64,7 +57,14 @@ export default function ForStudents() {
               className="rounded-lg h-64 object-cover"
             />
             <div className="bg-gradient-to-br from-accent/20 to-secondary/20 rounded-lg h-64 flex items-center justify-center">
-              <p className="text-center text-muted-foreground">Ko'proq rasmlar galereya bo'limida</p>
+              <a
+                href="http://t.me/Urganch_IMI"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-accent/90 transition-colors"
+              >
+                Ko'proq ko'rish
+              </a>
             </div>
           </div>
         </div>

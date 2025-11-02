@@ -2,7 +2,8 @@
 
 import { Trophy, Medal, Star, Download, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import Image from "next/image"
 
 export default function Achievements() {
   const allStudents = [
@@ -135,6 +136,24 @@ export default function Achievements() {
     },
   ]
 
+  const achievementImages = [
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_2025-11-02_18-20-01-Js5pcVeyHYZRA9KUHTWsFyMC3bJAQ6.jpg",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_2025-11-02_18-20-45-IWjl8xb4wOwAANmrnMk10kFEpCkqJ5.jpg",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_2025-11-02_18-20-25-2TDBdTiTHJBAqCprKWnh8C2kPAvI0T.jpg",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_2025-11-02_18-20-10-O0Ob6I1ZFi0sT5jIvj08rQYkPSB9Xe.jpg",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_2025-11-02_18-20-18-mxjdSbKFl8bVOThr2xrfQxhuUsij0U.jpg",
+    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_2025-11-02_18-20-37-UKIzF3ASopG2j1wwfi0JSdZJgrzAb6.jpg",
+  ]
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % achievementImages.length)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [achievementImages.length])
+
   return (
     <section id="achievements" className="py-20 md:py-32 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -143,6 +162,28 @@ export default function Achievements() {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             O'quvchi va o'qituvchilarning sertifikatlar, medal va faxriy yorliqlar
           </p>
+        </div>
+
+        <div className="mb-16 rounded-xl overflow-hidden border border-border bg-muted">
+          <div className="relative w-full h-96 md:h-[500px]">
+            <Image
+              src={achievementImages[currentImageIndex] || "/placeholder.svg"}
+              alt={`Achievement ${currentImageIndex + 1}`}
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="flex justify-center gap-2 py-4 bg-card">
+            {achievementImages.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentImageIndex(idx)}
+                className={`w-2.5 h-2.5 rounded-full transition-all ${
+                  idx === currentImageIndex ? "bg-yellow-500 w-8" : "bg-muted-foreground/30"
+                }`}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Main achievement categories */}
@@ -155,7 +196,7 @@ export default function Achievements() {
                 className="bg-card border border-border rounded-xl p-8 hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <Icon className="w-8 h-8 text-accent" />
+                  <Icon className="w-8 h-8 text-yellow-500" />
                   <div>
                     <h3 className="text-xl font-bold text-foreground">{category.title}</h3>
                     <p className="text-sm text-muted-foreground">{category.subtitle}</p>
@@ -215,7 +256,7 @@ export default function Achievements() {
             <div className="flex justify-center mt-8">
               <Button
                 onClick={() => setVisibleCount(visibleCount + 18)}
-                className="gap-2 bg-accent hover:bg-accent/90 text-white"
+                className="gap-2 bg-accent hover:bg-accent/90 text-black font-semibold"
               >
                 Ko'proq ko'rish
                 <ChevronDown className="w-4 h-4" />

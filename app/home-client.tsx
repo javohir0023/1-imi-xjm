@@ -5,8 +5,8 @@ import Header from "@/components/header"
 import Hero from "@/components/hero"
 import About from "@/components/about"
 import ForStudents from "@/components/for-students"
-import ForTeachers from "@/components/for-teachers"
 import Staff from "@/components/staff"
+import SchoolLife from "@/components/school-life"
 import Admissions from "@/components/admissions"
 import Achievements from "@/components/achievements"
 import Schedule from "@/components/schedule"
@@ -23,8 +23,8 @@ export default function HomeClient() {
         <Hero />
         <About />
         <ForStudents />
-        <ForTeachers />
         <Staff />
+        <SchoolLife />
         <Admissions />
         <Achievements />
         <Schedule />

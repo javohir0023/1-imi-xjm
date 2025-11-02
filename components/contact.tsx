@@ -174,7 +174,7 @@ export default function Contact() {
 
         <div className="mt-12 rounded-xl overflow-hidden border border-border h-96 bg-muted">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3039.5234567890123!2d61.3667!3d41.5667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f4f4f4f4f4f4f4f%3A0x4f4f4f4f4f4f4f4f!2sUrganch%2C%20Khorezm%20Region!5e0!3m2!1sen!2s!4v1234567890"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11944.138448482061!2d60.614431372929936!3d41.54684781582078!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x41dfc9a44bf3f7ef%3A0x9e65195a8462452e!2sUrganch%20shahar%201-son%20ixtisoslashtirilgan%20maktab-internat!5e0!3m2!1sru!2sus!4v1762104173425!5m2!1sru!2sus"
             width="100%"
             height="100%"
             style={{ border: 0 }}

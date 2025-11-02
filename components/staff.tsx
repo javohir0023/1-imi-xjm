@@ -11,10 +11,11 @@ interface StaffMember {
   positionUz: string
   positionRu: string
   positionEn: string
-  phone: string
+  phone?: string
   image?: string
   category: "administration" | "language" | "science" | "other"
   isQualified?: boolean
+  qualification?: string
 }
 
 const staffData: StaffMember[] = [
@@ -26,11 +27,11 @@ const staffData: StaffMember[] = [
     positionUz: "Direktor",
     positionRu: "Директор",
     positionEn: "Director",
-    phone: "91-432-76-64",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Axmedov%20G%27ulomjon%20Jumanazarovich-Hx6bYtldcDuJq3oH673wUGIwtckyh3.jpg",
     category: "administration",
     isQualified: true,
+    qualification: "Tarix fanlari bo'yicha falsafa doktori (PhD) ilmiy darajasi sohibi",
   },
   {
     id: 4,
@@ -40,11 +41,38 @@ const staffData: StaffMember[] = [
     positionUz: "MMIBDO'",
     positionRu: "Заместитель директора",
     positionEn: "Deputy Director",
-    phone: "94-315-40-34",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Seytirzayeva%20Iroda-VtX1nSNqVTOk0x8a7bNFeaZKmq9g8Y.jpg",
     category: "administration",
     isQualified: true,
+  },
+  {
+    id: 55,
+    nameUz: "Raximov Asror Anvar o'g'li",
+    nameRu: "Рахимов Асрор Анвар угли",
+    nameEn: "Raximov Asror Anvar o'g'li",
+    positionUz: "Informatika o'qituvchisi",
+    positionRu: "Учитель информатики",
+    positionEn: "Computer Science Teacher",
+    image:
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Raximov%20Asror%20Anvar%20o%E2%80%99g%E2%80%99li-MCGKiEXk1XZffUuoE3Sa3w0OEJ7yh2.jpg",
+    category: "science",
+    isQualified: true,
+    qualification: "A",
+  },
+  {
+    id: 57,
+    nameUz: "Atajanov Xamidulla Fayzullayevich",
+    nameRu: "Атажанов Хамидулла Файзуллаевич",
+    nameEn: "Atajanov Xamidulla Fayzullayevich",
+    positionUz: "Fizika o'qituvchisi",
+    positionRu: "Учитель физики",
+    positionEn: "Physics Teacher",
+    image:
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Atajanov%20Xamidulla%20Fayzullayevich-NbRDaIZQqJzYmP60f12KiZHjoubCgo.jpg",
+    category: "science",
+    isQualified: true,
+    qualification: "Milliy (A)",
   },
   {
     id: 31,
@@ -54,25 +82,25 @@ const staffData: StaffMember[] = [
     positionUz: "Tarix o'qituvchisi",
     positionRu: "Учитель истории",
     positionEn: "History Teacher",
-    phone: "+998 93-745-91-29",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Karimov%20Sarvar%20Otabayevich-GeGVL8CI78dXW7RdNTDOdtCHgshKYv.jpg",
     category: "science",
     isQualified: true,
+    qualification: "Milliy (A+)",
   },
   {
     id: 50,
     nameUz: "Jumaniyozova Mahliyo Qahramonovna",
-    nameRu: "Юманиёзова Махлиё Кахраманovna",
+    nameRu: "Юманиёзова Махлиё Кахрамановна",
     nameEn: "Jumaniyozova Mahliyo Qahramonovna",
     positionUz: "Kimyo o'qituvchisi",
     positionRu: "Учитель химии",
     positionEn: "Chemistry Teacher",
-    phone: "93-764-53-35",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Jumaniyozova%20Mahliyo%20Qahramonovna-UuKIClUCX6hoK2W5MqmWhEzyUpD8Ir.jpg",
     category: "science",
     isQualified: true,
+    qualification: "Milliy (B+)",
   },
   {
     id: 34,
@@ -82,11 +110,11 @@ const staffData: StaffMember[] = [
     positionUz: "Matematika o'qituvchisi",
     positionRu: "Учитель математики",
     positionEn: "Mathematics Teacher",
-    phone: "+998 93 740-17-71",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Jumaniyozov%20Baxtiyor%20Marimbayevich-jKnXoM1F32qUT6POlzRJV6kTxNJwN4.jpg",
     category: "science",
     isQualified: true,
+    qualification: "Milliy (B+)",
   },
   {
     id: 19,
@@ -96,11 +124,11 @@ const staffData: StaffMember[] = [
     positionUz: "Rus tili o'qituvchisi",
     positionRu: "Учитель русского языка",
     positionEn: "Russian Language Teacher",
-    phone: "99-684-60-09",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Jumaniyazova%20Yulduzxon%20Oktamovna-GLXNItccUhf7p7gJQdOWbMaAyI67CH.jpg",
     category: "language",
     isQualified: true,
+    qualification: "TRKI (A), Milliy (A)",
   },
   {
     id: 11,
@@ -110,7 +138,6 @@ const staffData: StaffMember[] = [
     positionUz: "Kutubxona mudiri",
     positionRu: "Директор библиотеки",
     positionEn: "Librarian",
-    phone: "97-456-19-30",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Ibragimova%20Indira%20Temurovna-RBy4lPIdR5pp1Viy0PDZvgNHihVUWD.jpg",
     category: "other",
@@ -124,7 +151,6 @@ const staffData: StaffMember[] = [
     positionUz: "Matematika o'qituvchisi",
     positionRu: "Учитель математики",
     positionEn: "Mathematics Teacher",
-    phone: "+998 93 744-54-66",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Ismailov%20Sadulla%20Tajiyevich-OJlZVqw2jfrrTpMFDDo5oYOMjqpEzg.jpg",
     category: "science",
@@ -138,11 +164,11 @@ const staffData: StaffMember[] = [
     positionUz: "Fizika o'qituvchisi",
     positionRu: "Учитель физики",
     positionEn: "Physics Teacher",
-    phone: "+998 93 743-44-43",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Bekberganov%20Alisher%20Xikmatullayevich-edgkCQLkG9eBGXfCbgehqx9VBLNYrs.jpg",
     category: "science",
     isQualified: true,
+    qualification: "Milliy (A+)",
   },
   {
     id: 51,
@@ -152,7 +178,6 @@ const staffData: StaffMember[] = [
     positionUz: "Kimyo o'qituvchisi",
     positionRu: "Учитель химии",
     positionEn: "Chemistry Teacher",
-    phone: "97-600-46-90",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Nurmetova%20Dilrabo%20Kamiljanovna-Wo4lnSjlUX5MGSEbStak5ktpeVnOpJ.jpg",
     category: "science",
@@ -166,7 +191,6 @@ const staffData: StaffMember[] = [
     positionUz: "Ona tili va adabiyot o'qituvchisi",
     positionRu: "Учитель родного языка и литературы",
     positionEn: "Native Language and Literature Teacher",
-    phone: "94-314-37-34",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Mavlanova%20Mahliyo-RBDheaQNirOgwKuM2LfFyq2fXjfFOx.jpg",
     category: "language",
@@ -180,11 +204,11 @@ const staffData: StaffMember[] = [
     positionUz: "Ingliz tili o'qituvchisi",
     positionRu: "Учитель английского языка",
     positionEn: "English Language Teacher",
-    phone: "+998 97 518-09-25",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Rahimova%20Dilnoza%20Shuxratovna-ss3Spk9Ggz4kTF9bzvWgQHXpaqeg0E.jpg",
     category: "language",
     isQualified: true,
+    qualification: "IELTS (C1), CEFR (C1)",
   },
   {
     id: 3,
@@ -194,7 +218,6 @@ const staffData: StaffMember[] = [
     positionUz: "Maktab maslahatchisi",
     positionRu: "Школьный консультант",
     positionEn: "School Counselor",
-    phone: "93-754-43-32",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Quryazova%20Ruxsora%20Madamin%20qizi-LdrpHfaMNdE41bBTabsUPToe1B1Spn.jpg",
     category: "administration",
@@ -208,11 +231,11 @@ const staffData: StaffMember[] = [
     positionUz: "Rus tili o'qituvchisi",
     positionRu: "Учитель русского языка",
     positionEn: "Russian Language Teacher",
-    phone: "90-433-04-94",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Madrimova%20Indira%20Alisherovna-izvNsjCrBqakK4Yrs9OEAv0nCJltHa.jpg",
     category: "language",
     isQualified: true,
+    qualification: "TRKI (B+)",
   },
   {
     id: 40,
@@ -222,11 +245,11 @@ const staffData: StaffMember[] = [
     positionUz: "Matematika o'qituvchisi",
     positionRu: "Учитель математики",
     positionEn: "Mathematics Teacher",
-    phone: "+998 91 275-85-35",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Nurmetov%20Murod%20Farxodovich-qbvJq2QYiB9A8TeWy9wdnW6vetugBc.jpg",
     category: "science",
     isQualified: true,
+    qualification: "Milliy (B+)",
   },
   {
     id: 30,
@@ -236,11 +259,11 @@ const staffData: StaffMember[] = [
     positionUz: "Tarix o'qituvchisi",
     positionRu: "Учитель истории",
     positionEn: "History Teacher",
-    phone: "+998 93 289-06-50",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Masharifov%20Mardonbek%20Otabek%20o%60g%60li-xRCa42GPGOyJJNIbz5y0J5HZ6wYo3T.jpg",
     category: "science",
     isQualified: true,
+    qualification: "Milliy (B+)",
   },
   {
     id: 22,
@@ -250,11 +273,11 @@ const staffData: StaffMember[] = [
     positionUz: "Ingliz tili o'qituvchisi",
     positionRu: "Учитель английского языка",
     positionEn: "English Language Teacher",
-    phone: "+998 91 424-21-71",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Madraximov%20Dilshod%20Sa%60dullayevich-8IcNnszs36jhfsTRsF1psGrkShO8Wi.jpg",
     category: "language",
     isQualified: true,
+    qualification: "TEFL (C1)",
   },
   {
     id: 43,
@@ -264,7 +287,6 @@ const staffData: StaffMember[] = [
     positionUz: "Informatika o'qituvchisi",
     positionRu: "Учитель информатики",
     positionEn: "Computer Science Teacher",
-    phone: "+998 93 467-65-58",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Matrasulova%20Ra%60no%20Ruzmamatovna-yPiQ3z8Inysehh1kl0p2KA9HkdATkj.jpg",
     category: "science",
@@ -278,7 +300,6 @@ const staffData: StaffMember[] = [
     positionUz: "Fizika o'qituvchisi",
     positionRu: "Учитель физики",
     positionEn: "Physics Teacher",
-    phone: "+998 33-061-99-97",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Madaminov%20Sharifboy%20Xakimjonovich-zgp4uCDhAkdsEaFLZhT4LBbDoCsaZr.jpg",
     category: "science",
@@ -292,11 +313,11 @@ const staffData: StaffMember[] = [
     positionUz: "Ingliz tili o'qituvchisi",
     positionRu: "Учитель английского языка",
     positionEn: "English Language Teacher",
-    phone: "+998 94 318-77-04",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Yakubova%20Dilnoza%20%20Ruzmatovna-5Y804zobEOYJfN7fUPDgemzb1vsvRA.jpg",
     category: "language",
     isQualified: true,
+    qualification: "TKT (C1), IELTS (C1)",
   },
   {
     id: 38,
@@ -306,11 +327,11 @@ const staffData: StaffMember[] = [
     positionUz: "Matematika o'qituvchisi",
     positionRu: "Учитель математики",
     positionEn: "Mathematics Teacher",
-    phone: "+998 97 363-71-71",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/%D0%A5%D1%83%D0%B4%D0%B0%D0%B9%D0%B1%D0%B5%D1%80%D0%B3%D0%B0%D0%BD%D0%BE%D0%B2%D0%B0%20%D0%94%D0%B8%D0%BB%D1%81%D1%9E%D0%B7-vtHZYwxjE0evNvMqAlG6a12t9ZyNic.jpg",
     category: "science",
     isQualified: true,
+    qualification: "GRE (160), SAT (1060)",
   },
   {
     id: 25,
@@ -320,11 +341,11 @@ const staffData: StaffMember[] = [
     positionUz: "Ingliz tili o'qituvchisi",
     positionRu: "Учитель английского языка",
     positionEn: "English Language Teacher",
-    phone: "+998 99 344-87-50",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Raximov%20Ulug%60bek%20%20Amirbekovich-LWtRfgZIcA1zSPZ75EBHGFZNYAE4oI.jpg",
     category: "language",
     isQualified: true,
+    qualification: "CEFR (C1)",
   },
   {
     id: 44,
@@ -334,7 +355,6 @@ const staffData: StaffMember[] = [
     positionUz: "Informatika o'qituvchisi",
     positionRu: "Учитель информатики",
     positionEn: "Computer Science Teacher",
-    phone: "+998 93 467-33-77",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Urinova%20Feruza%20%20Jumabayevna-3oGbPFV4cUSTZ8qeRrXDOorvOMFELR.jpg",
     category: "science",
@@ -343,12 +363,11 @@ const staffData: StaffMember[] = [
   {
     id: 56,
     nameUz: "Xo'jayozova Dilnura G'apparganovna",
-    nameRu: "Ходжаёзова Дилнура Гаппарганovna",
+    nameRu: "Ходжаёзова Дилнура Гаппаргановна",
     nameEn: "Khojayozova Dilnura G'apparganovna",
     positionUz: "Biologiya o'qituvchisi",
     positionRu: "Учитель биологии",
     positionEn: "Biology Teacher",
-    phone: "+998 97 221-55-86",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Xo%60jayozova%20Dilnura%20G%60apparganovna-XqTSrv4QR2x0IvAFFdPGyexrG3agNZ.jpg",
     category: "science",
@@ -362,7 +381,6 @@ const staffData: StaffMember[] = [
     positionUz: "Tarbiya o'qituvchisi",
     positionRu: "Учитель воспитания",
     positionEn: "Education Teacher",
-    phone: "91-431-98-90",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Saidova%20Gavxar-UsufWBsD1t5cX7Tnh0eWxw5Ywe2jdo.jpg",
     category: "other",
@@ -376,11 +394,11 @@ const staffData: StaffMember[] = [
     positionUz: "Matematika o'qituvchisi",
     positionRu: "Учитель математики",
     positionEn: "Mathematics Teacher",
-    phone: "91-571-27-28",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Razzakov%20Javoxir-fsV7Ci8yL59SsK9FBsnzRLT6jigMc7.jpg",
     category: "science",
     isQualified: true,
+    qualification: "SAT (1060), GMAT (Quantitative 49)",
   },
   {
     id: 6,
@@ -390,7 +408,6 @@ const staffData: StaffMember[] = [
     positionUz: "ChQBT",
     positionRu: "Начальник отдела",
     positionEn: "Department Head",
-    phone: "77-038-47-40",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Rajabov%20Alisher-lVofCE1400y60QdbN4gynhZoU5LIWY.jpg",
     category: "administration",
@@ -404,11 +421,11 @@ const staffData: StaffMember[] = [
     positionUz: "Ona tili va adabiyot o'qituvchisi",
     positionRu: "Учитель родного языка и литературы",
     positionEn: "Native Language and Literature Teacher",
-    phone: "+998 91 421-62-64",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Rahimova%20Gulshan%20Kadambayevna-ThqEDI6y0Wv66gg8QSVcKdXeZ1hUOb.jpg",
     category: "language",
     isQualified: true,
+    qualification: "Milliy (81.60%)",
   },
   {
     id: 33,
@@ -418,11 +435,11 @@ const staffData: StaffMember[] = [
     positionUz: "Matematika o'qituvchisi",
     positionRu: "Учитель математики",
     positionEn: "Mathematics Teacher",
-    phone: "+998 95 599-22-72",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Rajabov%20Madyor%20Egamberganovich-4auvnqpIxok51OQ7n4HD9NqOsgi8f2.jpg",
     category: "science",
     isQualified: true,
+    qualification: "Milliy (B+)",
   },
 ]
 
@@ -545,7 +562,7 @@ export default function Staff() {
                       <div className="flex justify-center pt-8 pb-4">
                         <div className="w-40 h-40 rounded-full bg-muted flex items-center justify-center border-4 border-accent">
                           <div className="text-center">
-                            <div className="text-4xl text-muted-foreground mb-2">👤</div>
+                            <div className="text-4xl text-yellow-500 mb-2">👤</div>
                           </div>
                         </div>
                       </div>
@@ -557,7 +574,11 @@ export default function Staff() {
                       </h4>
                       <p className="text-black font-semibold mb-4">{getPosition(member)}</p>
                       <div className="flex items-center justify-center text-muted-foreground">
-                        <span className="text-sm">📞 {member.phone}</span>
+                        {member.qualification ? (
+                          <span className="text-sm font-medium text-black">{member.qualification}</span>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">-</span>
+                        )}
                       </div>
                     </div>
                   </div>
