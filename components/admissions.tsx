@@ -10,7 +10,7 @@ export default function Admissions() {
     {
       icon: Calendar,
       title: "Kirish Imtihonlari",
-      description: "Matematika, o'zbek tili va ingliz tilida imtihonlar",
+      description: "Matematika va ingliz tilida imtihonlar",
     },
     {
       icon: CheckCircle,
@@ -40,7 +40,7 @@ export default function Admissions() {
             return (
               <div key={index} className="relative">
                 <div className="bg-card p-6 rounded-xl border border-border text-center">
-                  <Icon className="w-12 h-12 text-accent mx-auto mb-4" />
+                  <Icon className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
                   <h3 className="font-bold text-foreground mb-2">{step.title}</h3>
                   <p className="text-sm text-muted-foreground">{step.description}</p>
                 </div>
@@ -54,33 +54,11 @@ export default function Admissions() {
 
         <div className="bg-primary text-primary-foreground rounded-xl p-8 md:p-12">
           <h3 className="text-2xl font-bold mb-6">Onlayn Ariza Topshirish</h3>
-          <form className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="Ism-Familiya"
-                className="px-4 py-3 rounded-lg bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground placeholder-primary-foreground/60"
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                className="px-4 py-3 rounded-lg bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground placeholder-primary-foreground/60"
-              />
-            </div>
-            <input
-              type="tel"
-              placeholder="Telefon raqami"
-              className="w-full px-4 py-3 rounded-lg bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground placeholder-primary-foreground/60"
-            />
-            <textarea
-              placeholder="Qo'shimcha ma'lumot"
-              rows={4}
-              className="w-full px-4 py-3 rounded-lg bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground placeholder-primary-foreground/60"
-            ></textarea>
+          <a href="https://ariza.piima.uz" target="_blank" rel="noopener noreferrer" className="inline-block">
             <button className="w-full px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity">
               Arizani Topshirish
             </button>
-          </form>
+          </a>
         </div>
       </div>
     </section>

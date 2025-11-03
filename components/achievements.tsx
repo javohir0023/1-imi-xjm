@@ -205,7 +205,7 @@ export default function Achievements() {
                 <ul className="space-y-3">
                   {category.items.map((item, i) => (
                     <li key={i} className="flex gap-3 text-muted-foreground">
-                      <span className="text-accent font-bold">✓</span>
+                      <span className="text-yellow-500 font-bold">✓</span>
                       <span className="text-sm">{item}</span>
                     </li>
                   ))}

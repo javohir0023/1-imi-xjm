@@ -6,6 +6,7 @@ import Hero from "@/components/hero"
 import About from "@/components/about"
 import ForStudents from "@/components/for-students"
 import Staff from "@/components/staff"
+import ForTeachers from "@/components/for-teachers"
 import SchoolLife from "@/components/school-life"
 import Admissions from "@/components/admissions"
 import Achievements from "@/components/achievements"
@@ -24,6 +25,7 @@ export default function HomeClient() {
         <About />
         <ForStudents />
         <Staff />
+        <ForTeachers />
         <SchoolLife />
         <Admissions />
         <Achievements />

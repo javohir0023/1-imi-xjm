@@ -13,7 +13,7 @@ export default function Header() {
   const navItems = [
     { label: "Maktab haqida", href: "#about", uz: "Maktab haqida", ru: "О школе", en: "About" },
     { label: "O'quvchilar", href: "#students", uz: "O'quvchilar uchun", ru: "Для студентов", en: "For Students" },
-    { label: "O'qituvchilar", href: "#teachers", uz: "O'qituvchilar uchun", ru: "Для учителей", en: "For Teachers" },
+    { label: "Maktab Xodimlari", href: "#teachers", uz: "Maktab Xodimlari", ru: "Персонал школы", en: "School Staff" },
     { label: "Qabul", href: "#admissions", uz: "Qabul", ru: "Приём", en: "Admissions" },
     { label: "Yutuqlar", href: "#achievements", uz: "Yutuqlar", ru: "Достижения", en: "Achievements" },
     { label: "Aloqa", href: "#contact", uz: "Aloqa", ru: "Контакты", en: "Contact" },
@@ -78,9 +78,11 @@ export default function Header() {
                 </button>
               ))}
             </div>
-            <button className="px-6 py-2 bg-accent text-accent-foreground rounded-lg font-medium hover:opacity-90 transition-opacity">
-              {language === "ru" ? "Подать заявку" : language === "en" ? "Apply" : "Ariza topshirish"}
-            </button>
+            <a href="https://ariza.piima.uz" target="_blank" rel="noopener noreferrer">
+              <button className="px-6 py-2 bg-accent text-accent-foreground rounded-lg font-medium hover:opacity-90 transition-opacity">
+                {language === "ru" ? "Подать заявку" : language === "en" ? "Apply" : "Ariza topshirish"}
+              </button>
+            </a>
           </div>
 
           <button className="lg:hidden p-2" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
@@ -116,9 +118,11 @@ export default function Header() {
                 </button>
               ))}
             </div>
-            <button className="w-full mt-4 px-4 py-2 bg-accent text-accent-foreground rounded-lg font-medium hover:opacity-90 transition-opacity">
-              {language === "ru" ? "Подать заявку" : language === "en" ? "Apply" : "Ariza topshirish"}
-            </button>
+            <a href="https://ariza.piima.uz" target="_blank" rel="noopener noreferrer" className="block">
+              <button className="w-full mt-4 px-4 py-2 bg-accent text-accent-foreground rounded-lg font-medium hover:opacity-90 transition-opacity">
+                {language === "ru" ? "Подать заявку" : language === "en" ? "Apply" : "Ariza topshirish"}
+              </button>
+            </a>
           </nav>
         )}
       </div>

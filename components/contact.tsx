@@ -1,10 +1,21 @@
 "use client"
 
+import type React from "react"
+
 import { Mail, Phone, MapPin, Clock } from "lucide-react"
+import { useState } from "react"
 import { useLanguage } from "@/lib/language-context"
 
 export default function Contact() {
   const { language } = useLanguage()
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  })
+  const [isLoading, setIsLoading] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
 
   const translations = {
     uz: {
@@ -15,7 +26,7 @@ export default function Contact() {
       phone: "Telefon",
       email: "Email",
       hours: "Ish Vaqti",
-      hoursText: "Dushanba - Juma: 08:00 - 17:00\nShanba - Yakshanba: Yopiq",
+      hoursText: "Dushanba - Shanba: 08:00 - 17:00\nYakshanba: Yopiq",
       sendMessage: "Xabar Yuborish",
       name: "Ism-Familiya",
       namePlaceholder: "Sizning ismingiz",
@@ -26,6 +37,8 @@ export default function Contact() {
       message: "Xabar",
       messagePlaceholder: "Sizning xabaringiz...",
       send: "Yuborish",
+      success: "Xabar muvaffaqiyatli yuborildi!",
+      error: "Xabar yuborishda xatolik. Iltimos, qayta urinib ko'ring.",
     },
     ru: {
       title: "Свяжитесь с нами",
@@ -35,7 +48,7 @@ export default function Contact() {
       phone: "Телефон",
       email: "Электронная почта",
       hours: "Часы работы",
-      hoursText: "Пн - Пт: 08:00 - 17:00\nСб - Вс: Закрыто",
+      hoursText: "Пн - Сб: 08:00 - 17:00\nВс: Закрыто",
       sendMessage: "Отправить сообщение",
       name: "Полное имя",
       namePlaceholder: "Ваше имя",
@@ -46,6 +59,8 @@ export default function Contact() {
       message: "Сообщение",
       messagePlaceholder: "Ваше сообщение...",
       send: "Отправить",
+      success: "Сообщение успешно отправлено!",
+      error: "Ошибка при отправке. Попробуйте еще раз.",
     },
     en: {
       title: "Contact Us",
@@ -55,7 +70,7 @@ export default function Contact() {
       phone: "Phone",
       email: "Email",
       hours: "Working Hours",
-      hoursText: "Monday - Friday: 08:00 - 17:00\nSaturday - Sunday: Closed",
+      hoursText: "Mon - Sat: 08:00 - 17:00\nSun: Closed",
       sendMessage: "Send Message",
       name: "Full Name",
       namePlaceholder: "Your name",
@@ -66,10 +81,47 @@ export default function Contact() {
       message: "Message",
       messagePlaceholder: "Your message...",
       send: "Send",
+      success: "Message sent successfully!",
+      error: "Error sending message. Please try again.",
     },
   }
 
   const t = translations[language]
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    try {
+      const response = await fetch("/api/submit-contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        setSubmitStatus("success")
+        setFormData({ name: "", email: "", subject: "", message: "" })
+        setTimeout(() => setSubmitStatus("idle"), 3000)
+      } else {
+        setSubmitStatus("error")
+        setTimeout(() => setSubmitStatus("idle"), 3000)
+      }
+    } catch (error) {
+      console.log("[v0] Error submitting form:", error)
+      setSubmitStatus("error")
+      setTimeout(() => setSubmitStatus("idle"), 3000)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   return (
     <section id="contact" className="py-20 md:py-32 bg-muted/50">
@@ -83,7 +135,7 @@ export default function Contact() {
           <div className="space-y-8">
             <div className="flex gap-4">
               <div className="flex-shrink-0">
-                <MapPin className="w-6 h-6 text-accent mt-1" />
+                <MapPin className="w-6 h-6 text-yellow-500 mt-1" />
               </div>
               <div>
                 <h3 className="font-bold text-foreground mb-1">{t.address}</h3>
@@ -93,7 +145,7 @@ export default function Contact() {
 
             <div className="flex gap-4">
               <div className="flex-shrink-0">
-                <Phone className="w-6 h-6 text-accent mt-1" />
+                <Phone className="w-6 h-6 text-yellow-500 mt-1" />
               </div>
               <div>
                 <h3 className="font-bold text-foreground mb-1">{t.phone}</h3>
@@ -107,7 +159,7 @@ export default function Contact() {
 
             <div className="flex gap-4">
               <div className="flex-shrink-0">
-                <Mail className="w-6 h-6 text-accent mt-1" />
+                <Mail className="w-6 h-6 text-yellow-500 mt-1" />
               </div>
               <div>
                 <h3 className="font-bold text-foreground mb-1">{t.email}</h3>
@@ -121,7 +173,7 @@ export default function Contact() {
 
             <div className="flex gap-4">
               <div className="flex-shrink-0">
-                <Clock className="w-6 h-6 text-accent mt-1" />
+                <Clock className="w-6 h-6 text-yellow-500 mt-1" />
               </div>
               <div>
                 <h3 className="font-bold text-foreground mb-1">{t.hours}</h3>
@@ -132,12 +184,16 @@ export default function Contact() {
 
           <div className="bg-card border border-border rounded-xl p-8">
             <h3 className="text-2xl font-bold text-foreground mb-6">{t.sendMessage}</h3>
-            <form className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">{t.name}</label>
                 <input
                   type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   placeholder={t.namePlaceholder}
+                  required
                   className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>
@@ -145,7 +201,11 @@ export default function Contact() {
                 <label className="block text-sm font-medium text-foreground mb-2">{t.emailLabel}</label>
                 <input
                   type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   placeholder={t.emailPlaceholder}
+                  required
                   className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>
@@ -153,20 +213,36 @@ export default function Contact() {
                 <label className="block text-sm font-medium text-foreground mb-2">{t.subject}</label>
                 <input
                   type="text"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
                   placeholder={t.subjectPlaceholder}
+                  required
                   className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">{t.message}</label>
                 <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   placeholder={t.messagePlaceholder}
                   rows={5}
+                  required
                   className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
                 ></textarea>
               </div>
-              <button className="w-full px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity">
-                {t.send}
+              {submitStatus === "success" && (
+                <div className="p-4 bg-green-100 text-green-800 rounded-lg">{t.success}</div>
+              )}
+              {submitStatus === "error" && <div className="p-4 bg-red-100 text-red-800 rounded-lg">{t.error}</div>}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {isLoading ? "Yuborilmoqda..." : t.send}
               </button>
             </form>
           </div>

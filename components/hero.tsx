@@ -52,12 +52,16 @@ export default function Hero() {
           </h1>
           <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-lg">{currentContent.description}</p>
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <button className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
-              {currentContent.applyBtn} <ArrowRight size={20} />
-            </button>
-            <button className="px-8 py-3 border-2 border-white text-white rounded-lg font-semibold hover:bg-white/10 transition-colors">
-              {currentContent.learnBtn}
-            </button>
+            <a href="https://ariza.piima.uz/" target="_blank" rel="noopener noreferrer">
+              <button className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 w-full sm:w-auto">
+                {currentContent.applyBtn} <ArrowRight size={20} />
+              </button>
+            </a>
+            <a href="http://t.me/Urganch_IMI" target="_blank" rel="noopener noreferrer">
+              <button className="px-8 py-3 border-2 border-white text-white rounded-lg font-semibold hover:bg-white/10 transition-colors w-full sm:w-auto">
+                {currentContent.learnBtn}
+              </button>
+            </a>
           </div>
         </div>
       </div>

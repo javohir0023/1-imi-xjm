@@ -28,7 +28,7 @@ export default function ForTeachers() {
     <section id="teachers" className="py-20 md:py-32 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">O'qituvchilar Uchun</h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Maktab Xodimlari</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Professional rivojlanish va ta'lim resurslarining to'liq to'plami
           </p>

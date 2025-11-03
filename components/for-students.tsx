@@ -27,6 +27,10 @@ export default function ForStudents() {
   return (
     <section id="students" className="py-20 md:py-32 bg-muted/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 text-balance">O'quvchilar Uchun</h2>
+        </div>
+
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {resources.map((resource, index) => {
             const Icon = resource.icon
@@ -61,7 +65,7 @@ export default function ForStudents() {
                 href="http://t.me/Urganch_IMI"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-accent/90 transition-colors"
+                className="px-6 py-3 bg-black text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
               >
                 Ko'proq ko'rish
               </a>
