@@ -58,7 +58,7 @@ const staffData: StaffMember[] = [
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Raximov%20Asror%20Anvar%20o%E2%80%99g%E2%80%99li-MCGKiEXk1XZffUuoE3Sa3w0OEJ7yh2.jpg",
     category: "science",
     isQualified: true,
-    qualification: "A",
+    qualification: "Microsoft Certified Educator(A)",
   },
   {
     id: 57,

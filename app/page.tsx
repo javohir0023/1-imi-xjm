@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Urganch 1st Specialized School-Boarding School (IMI) - Excellence in Education",
   description:
     "Urganch city 1st specialized school-boarding school under the Specialized Education Institutions Agency system. Providing quality education and professional development.",
-  generator: "v0.app",
+  generator: "Xajiboyev Javoxir",
 }
 
 export default function Home() {

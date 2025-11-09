@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message: "Data submitted successfully" }, { status: 200 })
   } catch (error) {
-    console.error("[v0] Error submitting form:", error)
+    console.error("xjm Error submitting form:", error)
     return NextResponse.json({ success: false, message: "Error submitting data" }, { status: 500 })
   }
 }
