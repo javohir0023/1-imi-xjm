@@ -26,7 +26,7 @@ export default function Footer() {
       address: "Urganch shahar, Xorazm viloyati",
       phone: "+998 (62) 223-20-31",
       copyright: "© 2025 Urganch 1-son Ixtisoslashtirilgan Maktab-Internati. Barcha huquqlar himoyalangan.",
-      agency: "O'zbekiston Respublikasi Ixtisoslashtirilgan ta'lim muassasalari agentligi tizimida faoliyat ko'rsatadi",
+      agency: "Sayt asoschisi Xajiboyev Javoxir va sayt ma'lumotlariga javobgar Siddiqov Saidmuhammad",
     },
     ru: {
       title: "Урганч 1-ИМИ",
@@ -45,7 +45,7 @@ export default function Footer() {
       address: "г. Урганч, Хорезмская область",
       phone: "+998 (62) 223-20-31",
       copyright: "© 2025 Урганч 1-я специализированная школа-интернат. Все права защищены.",
-      agency: "Работает в системе Агентства специализированных образовательных учреждений Республики Узбекистан",
+      agency: "Основателем сайта является Хаджибоев Джавахир, а ответственным за информацию на сайте является Сиддиков Саидмухаммад.",
     },
     en: {
       title: "Urganch 1st IMI",
@@ -65,7 +65,7 @@ export default function Footer() {
       phone: "+998 (62) 223-20-31",
       copyright: "© 2025 Urganch 1st Specialized School-Boarding School. All rights reserved.",
       agency:
-        "Operates within the system of the Agency of Specialized Educational Institutions of the Republic of Uzbekistan",
+        "The founder of the site is Khajiboyev Javakhir and the responsible for the site information is Siddikov Saidmuhammad.",
     },
   }
 
