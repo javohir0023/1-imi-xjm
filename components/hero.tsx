@@ -36,7 +36,7 @@ export default function Hero() {
     <section className="relative w-full h-screen md:h-[600px] overflow-hidden">
       <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
         <source
-          src=""
+          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/maktab-qisqacha_9Ieo6lJr-DNGCSe7qio3U2M5tiUenr1VUyEpV5j.mp4"
           type="video/mp4"
         />
       </video>
