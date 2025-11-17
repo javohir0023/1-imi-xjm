@@ -1,11 +1,14 @@
 "use client"
 
-import { Trophy, Medal, Star, Download, ChevronDown } from "lucide-react"
+import { Trophy, Medal, Star, Download, ChevronDown } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import Image from "next/image"
+import { useLanguage } from "@/lib/language-context"
 
 export default function Achievements() {
+  const { language } = useLanguage()
+
   const allStudents = [
     { name: "Gandjayev Amirxon", class: "8-01", cert: "CEFR C1 (65)" },
     { name: "Otanazarova Mohinur", class: "8-01", cert: "CEFR C1 (66)" },
@@ -100,39 +103,140 @@ export default function Achievements() {
   const displayedStudents = allStudents.slice(0, visibleCount)
   const hasMore = visibleCount < allStudents.length
 
+  const translations = {
+    uz: {
+      title: "Erishilgan Yutuqlar",
+      subtitle: "O'quvchi va o'qituvchilarning sertifikatlar, medal va faxriy yorliqlar",
+      cert_title: "Sertifikatni Egallar",
+      cert_subtitle: "Xalqaro sertifikatlar",
+      contests_title: "Tanlov va Olimpiadalar",
+      contests_subtitle: "Qo'lga kiritilgan natijalar",
+      cultural_title: "Madaniy va Sport Yutuqlari",
+      cultural_subtitle: "Shakhs va jamoa yutuqlari",
+      table_title: "Xalqaro Sertifikat Egallar (2024-2025)",
+      export: "Export",
+      name_column: "O'quvchining Ismi",
+      class_column: "Sinf",
+      cert_column: "Sertifikat",
+      show_more: "Ko'proq ko'rish",
+      total_text: (count: number) => `Jami ${count} o'quvchi xalqaro sertifikatga ega. CEFR (C1, B2, B1), IELTS, SAT va boshqa xalqaro standartlar bo'yicha.`,
+    },
+    ru: {
+      title: "Достижения",
+      subtitle: "Сертификаты, медали и награды учеников и учителей",
+      cert_title: "Обладатели сертификатов",
+      cert_subtitle: "Международные сертификаты",
+      contests_title: "Конкурсы и Олимпиады",
+      contests_subtitle: "Достигнутые результаты",
+      cultural_title: "Культурные и спортивные достижения",
+      cultural_subtitle: "Личные и командные достижения",
+      table_title: "Обладатели международных сертификатов (2024-2025)",
+      export: "Экспорт",
+      name_column: "Имя ученика",
+      class_column: "Класс",
+      cert_column: "Сертификат",
+      show_more: "Показать больше",
+      total_text: (count: number) => `Всего ${count} учеников имеют международные сертификаты. По стандартам CEFR (C1, B2, B1), IELTS, SAT и другим международным стандартам.`,
+    },
+    en: {
+      title: "Achievements",
+      subtitle: "Certificates, medals and awards of students and teachers",
+      cert_title: "Certificate Holders",
+      cert_subtitle: "International certificates",
+      contests_title: "Contests and Olympiads",
+      contests_subtitle: "Achieved results",
+      cultural_title: "Cultural and Sports Achievements",
+      cultural_subtitle: "Individual and team achievements",
+      table_title: "International Certificate Holders (2024-2025)",
+      export: "Export",
+      name_column: "Student Name",
+      class_column: "Class",
+      cert_column: "Certificate",
+      show_more: "Show More",
+      total_text: (count: number) => `Total ${count} students have international certificates. According to CEFR (C1, B2, B1), IELTS, SAT and other international standards.`,
+    },
+  }
+
+  const t = translations[language]
+
   const categories = [
     {
       icon: Trophy,
-      title: "Sertifikatni Egallar",
-      subtitle: "Xalqaro sertifikatlar",
-      items: [
-        "CEFR (European Framework) - 50+ o'quvchi",
-        "IELTS International English Language Testing System",
-        "SAT - Amerika Ta'lim Testi",
-        "German va French Language Certificates",
-      ],
+      title: t.cert_title,
+      subtitle: t.cert_subtitle,
+      items:
+        language === "ru"
+          ? [
+              "CEFR (European Framework) - 50+ учеников",
+              "IELTS International English Language Testing System",
+              "SAT - Американский образовательный тест",
+              "Немецкий и французский языковые сертификаты",
+            ]
+          : language === "en"
+          ? [
+              "CEFR (European Framework) - 50+ students",
+              "IELTS International English Language Testing System",
+              "SAT - American Educational Test",
+              "German and French Language Certificates",
+            ]
+          : [
+              "CEFR (European Framework) - 50+ o'quvchi",
+              "IELTS International English Language Testing System",
+              "SAT - Amerika Ta'lim Testi",
+              "German va French Language Certificates",
+            ],
     },
     {
       icon: Medal,
-      title: "Tanlov va Olimpiadalar",
-      subtitle: "Qo'lga kiritilgan natijalar",
-      items: [
-        "Viloyat fan olimpiadalarida yuqori o'rinlar",
-        "Respublika darajasidagi tanlovlarda ishtirok",
-        "Xalqaro STEM tanlovlarida medallari",
-        "O'quvchilar ilmiy konferentsiyasida taqdimotlar",
-      ],
+      title: t.contests_title,
+      subtitle: t.contests_subtitle,
+      items:
+        language === "ru"
+          ? [
+              "Высокие места на областных олимпиадах",
+              "Участие в республиканских конкурсах",
+              "Медали на международных STEM конкурсах",
+              "Презентации на научных конференциях",
+            ]
+          : language === "en"
+          ? [
+              "High places at regional olympiads",
+              "Participation in republican competitions",
+              "Medals at international STEM competitions",
+              "Presentations at student conferences",
+            ]
+          : [
+              "Viloyat fan olimpiadalarida yuqori o'rinlar",
+              "Respublika darajasidagi tanlovlarda ishtirok",
+              "Xalqaro STEM tanlovlarida medallari",
+              "O'quvchilar ilmiy konferentsiyasida taqdimotlar",
+            ],
     },
     {
       icon: Star,
-      title: "Madaniy va Sport Yutuqlari",
-      subtitle: "Shakhs va jamoa yutuqlari",
-      items: [
-        "Sportda respublika medalillari",
-        "Musiqa va san'at tanlovlarida sertifikatlar",
-        "Xalqaro madaniy almashuvlarda ishtirokchilar",
-        "Liderlik dasturlarida foydalanuvchilar",
-      ],
+      title: t.cultural_title,
+      subtitle: t.cultural_subtitle,
+      items:
+        language === "ru"
+          ? [
+              "Республиканские медали в спорте",
+              "Сертификаты на конкурсах музыки и искусства",
+              "Участники международных культурных обменов",
+              "Участники программ лидерства",
+            ]
+          : language === "en"
+          ? [
+              "Republican medals in sports",
+              "Certificates in music and art competitions",
+              "Participants in international cultural exchanges",
+              "Participants in leadership programs",
+            ]
+          : [
+              "Sportda respublika medalillari",
+              "Musiqa va san'at tanlovlarida sertifikatlar",
+              "Xalqaro madaniy almashuvlarda ishtirokchilar",
+              "Liderlik dasturlarida foydalanuvchilar",
+            ],
     },
   ]
 
@@ -158,10 +262,8 @@ export default function Achievements() {
     <section id="achievements" className="py-20 md:py-32 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Erishilgan Yutuqlar</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            O'quvchi va o'qituvchilarning sertifikatlar, medal va faxriy yorliqlar
-          </p>
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">{t.title}</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t.subtitle}</p>
         </div>
 
         <div className="mb-16 rounded-xl overflow-hidden border border-border bg-muted">
@@ -186,7 +288,6 @@ export default function Achievements() {
           </div>
         </div>
 
-        {/* Main achievement categories */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {categories.map((category, index) => {
             const Icon = category.icon
@@ -215,13 +316,12 @@ export default function Achievements() {
           })}
         </div>
 
-        {/* Student achievements table */}
         <div className="bg-card border border-border rounded-xl p-8">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold text-foreground">Xalqaro Sertifikat Egallar (2024-2025)</h3>
+            <h3 className="text-2xl font-bold text-foreground">{t.table_title}</h3>
             <Button variant="outline" size="sm" className="gap-2 bg-transparent">
               <Download className="w-4 h-4" />
-              Export
+              {t.export}
             </Button>
           </div>
 
@@ -230,9 +330,9 @@ export default function Achievements() {
               <thead>
                 <tr className="border-b border-border">
                   <th className="text-left py-3 px-4 font-bold text-foreground">#</th>
-                  <th className="text-left py-3 px-4 font-bold text-foreground">O'quvchining Ismi</th>
-                  <th className="text-left py-3 px-4 font-bold text-foreground">Sinf</th>
-                  <th className="text-left py-3 px-4 font-bold text-foreground">Sertifikat</th>
+                  <th className="text-left py-3 px-4 font-bold text-foreground">{t.name_column}</th>
+                  <th className="text-left py-3 px-4 font-bold text-foreground">{t.class_column}</th>
+                  <th className="text-left py-3 px-4 font-bold text-foreground">{t.cert_column}</th>
                 </tr>
               </thead>
               <tbody>
@@ -258,16 +358,13 @@ export default function Achievements() {
                 onClick={() => setVisibleCount(visibleCount + 18)}
                 className="gap-2 bg-accent hover:bg-accent/90 text-black font-semibold"
               >
-                Ko'proq ko'rish
+                {t.show_more}
                 <ChevronDown className="w-4 h-4" />
               </Button>
             </div>
           )}
 
-          <p className="text-sm text-muted-foreground mt-6">
-            Jami {allStudents.length} o'quvchi xalqaro sertifikatga ega. CEFR (C1, B2, B1), IELTS, SAT va boshqa xalqaro
-            standartlar bo'yicha.
-          </p>
+          <p className="text-sm text-muted-foreground mt-6">{t.total_text(allStudents.length)}</p>
         </div>
       </div>
     </section>

@@ -2,6 +2,7 @@
 
 import { useLanguage } from "@/lib/language-context"
 import Image from "next/image"
+import { useState, useEffect, useRef } from "react"
 
 interface StaffMember {
   id: number
@@ -34,6 +35,19 @@ const staffData: StaffMember[] = [
     qualification: "Tarix fanlari bo'yicha falsafa doktori (PhD) ilmiy darajasi sohibi",
   },
   {
+    id: 2,
+    nameUz: "Bekzod Bobojonov",
+    nameRu: "Бекзод Бобожонов",
+    nameEn: "Bekzod Bobojonov",
+    positionUz: "O'IBDO'",
+    positionRu: "Заместитель директора по образовательным вопросам",
+    positionEn: "Deputy Director for Educational Affairs",
+    image:
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Bekzod%20Bobojonov-skc6CVHuVs8ZDqFmyhsunvvGTsR0rb.jpg",
+    category: "administration",
+    isQualified: true,
+  },
+  {
     id: 4,
     nameUz: "Seytirzayeva Iroda",
     nameRu: "Сейтирзаева Ирода",
@@ -58,7 +72,7 @@ const staffData: StaffMember[] = [
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Raximov%20Asror%20Anvar%20o%E2%80%99g%E2%80%99li-MCGKiEXk1XZffUuoE3Sa3w0OEJ7yh2.jpg",
     category: "science",
     isQualified: true,
-    qualification: "Microsoft Certified Educator(A)",
+    qualification: "A",
   },
   {
     id: 57,
@@ -445,6 +459,26 @@ const staffData: StaffMember[] = [
 
 export default function Staff() {
   const { language } = useLanguage()
+  const [showAll, setShowAll] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
 
   const translations = {
     uz: {
@@ -454,6 +488,8 @@ export default function Staff() {
       language: "Til o'qituvchilari",
       science: "Fan o'qituvchilari",
       other: "Boshqa xodimlar",
+      showMore: "Ko'proq ko'rish",
+      showLess: "Yashirish",
     },
     ru: {
       title: "Сотрудники школы",
@@ -462,6 +498,8 @@ export default function Staff() {
       language: "Учителя иностранных языков",
       science: "Учителя естественных наук",
       other: "Другие сотрудники",
+      showMore: "Показать больше",
+      showLess: "Скрыть",
     },
     en: {
       title: "School Staff",
@@ -470,6 +508,8 @@ export default function Staff() {
       language: "Language Teachers",
       science: "Science Teachers",
       other: "Other Staff",
+      showMore: "Show More",
+      showLess: "Show Less",
     },
   }
 
@@ -524,9 +564,9 @@ export default function Staff() {
   const categoryOrder = ["administration", "language", "science", "other"]
 
   return (
-    <section id="staff" className="py-20 md:py-32 bg-background">
+    <section ref={sectionRef} id="staff" className="py-20 md:py-32 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div className={`text-center mb-16 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">{t.title}</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t.subtitle}</p>
         </div>
@@ -535,6 +575,8 @@ export default function Staff() {
           const members = groupedStaff[category]
           if (!members || members.length === 0) return null
 
+          const displayMembers = category === "administration" || showAll ? members : members.slice(0, 3)
+
           return (
             <div key={category} className="mb-16">
               <h3 className="text-2xl font-bold text-foreground mb-8 pb-4 border-b-2 border-accent">
@@ -542,10 +584,10 @@ export default function Staff() {
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {members.map((member) => (
+                {displayMembers.map((member, index) => (
                   <div
                     key={member.id}
-                    className="bg-card rounded-xl overflow-hidden border border-border hover:shadow-lg transition-shadow"
+                    className={`bg-card rounded-xl overflow-hidden border border-border hover:shadow-lg transition-all duration-500 delay-${index * 50} ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
                   >
                     {member.image ? (
                       <div className="flex justify-center pt-8 pb-4">
@@ -584,6 +626,17 @@ export default function Staff() {
                   </div>
                 ))}
               </div>
+
+              {category !== "administration" && members.length > 3 && (
+                <div className="text-center mt-8">
+                  <button
+                    onClick={() => setShowAll(!showAll)}
+                    className="px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors"
+                  >
+                    {showAll ? t.showLess : t.showMore}
+                  </button>
+                </div>
+              )}
             </div>
           )
         })}

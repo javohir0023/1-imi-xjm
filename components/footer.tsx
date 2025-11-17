@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Mail, Phone, MapPin, Facebook, Youtube, Send, Instagram } from "lucide-react"
+import { Mail, Phone, MapPin, Facebook, Youtube, Send, Instagram } from 'lucide-react'
 import { useLanguage } from "@/lib/language-context"
 
 export default function Footer() {
@@ -45,7 +45,7 @@ export default function Footer() {
       address: "г. Урганч, Хорезмская область",
       phone: "+998 (62) 223-20-31",
       copyright: "© 2025 Урганч 1-я специализированная школа-интернат. Все права защищены.",
-      agency: "Основателем сайта является Хаджибоев Джавахир, а ответственным за информацию на сайте является Сиддиков Саидмухаммад.",
+      agency: "Основатель сайта Хажибоев Джавохир и ответственный за информацию сайта Сиддиков Саидмухаммад",
     },
     en: {
       title: "Urganch 1st IMI",
@@ -64,8 +64,7 @@ export default function Footer() {
       address: "Urganch city, Khorezm region",
       phone: "+998 (62) 223-20-31",
       copyright: "© 2025 Urganch 1st Specialized School-Boarding School. All rights reserved.",
-      agency:
-        "The founder of the site is Khajiboyev Javakhir and the responsible for the site information is Siddikov Saidmuhammad.",
+      agency: "Site founder Khajiboev Javohir and site information manager Siddiqov Saidmukhammad",
     },
   }
 

@@ -1,14 +1,34 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Menu, X } from "lucide-react"
+import { Menu, X } from 'lucide-react'
 import { useLanguage } from "@/lib/language-context"
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const { language, setLanguage } = useLanguage()
+  const [darkMode, setDarkMode] = useState(false)
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme")
+    if (savedTheme === "dark") {
+      setDarkMode(true)
+      document.documentElement.classList.add("dark")
+    }
+  }, [])
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode)
+    if (!darkMode) {
+      document.documentElement.classList.add("dark")
+      localStorage.setItem("theme", "dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+      localStorage.setItem("theme", "light")
+    }
+  }
 
   const navItems = [
     { label: "Maktab haqida", href: "#about", uz: "Maktab haqida", ru: "О школе", en: "About" },
@@ -26,7 +46,7 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-border shadow-sm">
+    <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-border shadow-sm transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <Link href="/" className="flex items-center gap-3">
@@ -65,6 +85,13 @@ export default function Header() {
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={toggleDarkMode}
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
+              aria-label="Toggle dark mode"
+            >
+              {darkMode ? "🌙" : "☀️"}
+            </button>
             <div className="flex gap-2">
               {["uz", "ru", "en"].map((lang) => (
                 <button

@@ -37,8 +37,8 @@ export default function Contact() {
       message: "Xabar",
       messagePlaceholder: "Sizning xabaringiz...",
       send: "Yuborish",
-      success: "Xabar muvaffaqiyatli yuborildi!",
-      error: "Xabar yuborishda xatolik. Iltimos, qayta urinib ko'ring.",
+      success: "✅ Ma'lumot yuborildi",
+      error: "⚠️ Xatolik yuz berdi",
     },
     ru: {
       title: "Свяжитесь с нами",
@@ -59,8 +59,8 @@ export default function Contact() {
       message: "Сообщение",
       messagePlaceholder: "Ваше сообщение...",
       send: "Отправить",
-      success: "Сообщение успешно отправлено!",
-      error: "Ошибка при отправке. Попробуйте еще раз.",
+      success: "✅ Сообщение отправлено",
+      error: "⚠️ Произошла ошибка",
     },
     en: {
       title: "Contact Us",
@@ -81,8 +81,8 @@ export default function Contact() {
       message: "Message",
       messagePlaceholder: "Your message...",
       send: "Send",
-      success: "Message sent successfully!",
-      error: "Error sending message. Please try again.",
+      success: "✅ Message sent",
+      error: "⚠️ Error occurred",
     },
   }
 
@@ -93,22 +93,18 @@ export default function Contact() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/submit-contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbzeKEwFB6vU-q9aLGEroC322X0DpnimsFbulMMxSCdAFFbHfmBX3l7qgGWEyDeVKRe9/exec",
+        {
+          method: "POST",
+          mode: "no-cors",
+          body: JSON.stringify(formData),
         },
-        body: JSON.stringify(formData),
-      })
+      )
 
-      if (response.ok) {
-        setSubmitStatus("success")
-        setFormData({ name: "", email: "", subject: "", message: "" })
-        setTimeout(() => setSubmitStatus("idle"), 3000)
-      } else {
-        setSubmitStatus("error")
-        setTimeout(() => setSubmitStatus("idle"), 3000)
-      }
+      setSubmitStatus("success")
+      setFormData({ name: "", email: "", subject: "", message: "" })
+      setTimeout(() => setSubmitStatus("idle"), 3000)
     } catch (error) {
       console.log("[v0] Error submitting form:", error)
       setSubmitStatus("error")
@@ -234,9 +230,11 @@ export default function Contact() {
                 ></textarea>
               </div>
               {submitStatus === "success" && (
-                <div className="p-4 bg-green-100 text-green-800 rounded-lg">{t.success}</div>
+                <div className="p-4 bg-green-100 text-green-800 rounded-lg animate-fade-in">{t.success}</div>
               )}
-              {submitStatus === "error" && <div className="p-4 bg-red-100 text-red-800 rounded-lg">{t.error}</div>}
+              {submitStatus === "error" && (
+                <div className="p-4 bg-red-100 text-red-800 rounded-lg animate-fade-in">{t.error}</div>
+              )}
               <button
                 type="submit"
                 disabled={isLoading}
