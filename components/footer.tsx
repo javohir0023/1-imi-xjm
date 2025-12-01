@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Mail, Phone, MapPin, Facebook, Youtube, Send, Instagram } from "lucide-react"
+import { Mail, Phone, MapPin, Facebook, Youtube, Send, Instagram } from 'lucide-react'
 import { useLanguage } from "@/lib/language-context"
 
 export default function Footer() {
@@ -216,50 +216,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 pt-8 border-t border-primary-foreground/20 text-center text-sm text-primary-foreground/70">
-          <p>
-            {language === "uz" && (
-              <>
-                Sayt asoschisi{" "}
-                <a
-                  href="https://t.me/XJM_5665"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary-foreground hover:underline font-medium transition-all"
-                >
-                  Xajiboyev Javoxir
-                </a>{" "}
-                va sayt ma'lumotlariga javobgar Siddiqov Saidmuhammad
-              </>
-            )}
-            {language === "ru" && (
-              <>
-                Основатель сайта{" "}
-                <a
-                  href="https://t.me/XJM_5665"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary-foreground hover:underline font-medium transition-all"
-                >
-                  Хажибоев Джавохир
-                </a>{" "}
-                и ответственный за информацию сайта Сиддиков Саидмухаммад
-              </>
-            )}
-            {language === "en" && (
-              <>
-                Site founder{" "}
-                <a
-                  href="https://t.me/XJM_5665"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary-foreground hover:underline font-medium transition-all"
-                >
-                  Khajiboev Javohir
-                </a>{" "}
-                and site information manager Siddiqov Saidmukhammad
-              </>
-            )}
-          </p>
+          <p>{t.agency}</p>
         </div>
       </div>
     </footer>

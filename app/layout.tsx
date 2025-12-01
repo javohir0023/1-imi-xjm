@@ -8,8 +8,8 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: '1-IMI',
-  description: 'Ixtisoslashtirilgan ta'lim muassasalari agentligi tizimidagi Urganch shahar 1-son IMI ning matbuot xizmati.',
-  generator: 'Javoxir Xajiboyev',
+  description: 'Javoxir Xajiboyev tomonidan yaratilgan',
+  generator: 'XJM',
 }
 
 export default function RootLayout({
