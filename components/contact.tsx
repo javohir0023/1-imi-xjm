@@ -109,7 +109,7 @@ export default function Contact() {
       setFormData({ name: "", email: "", subject: "", message: "" })
       setTimeout(() => setSubmitStatus("idle"), 3000)
     } catch (error) {
-      console.log("[v0] Error submitting form:", error)
+      console.log("[1-imi] Error submitting form:", error)
       setSubmitStatus("error")
       setTimeout(() => setSubmitStatus("idle"), 3000)
     } finally {
