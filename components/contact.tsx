@@ -3,11 +3,14 @@
 import type React from "react"
 
 import { Mail, Phone, MapPin, Clock } from "lucide-react"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useLanguage } from "@/lib/language-context"
 
 export default function Contact() {
   const { language } = useLanguage()
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -106,7 +109,7 @@ export default function Contact() {
       setFormData({ name: "", email: "", subject: "", message: "" })
       setTimeout(() => setSubmitStatus("idle"), 3000)
     } catch (error) {
-      console.log("[1-imi] Error submitting form:", error)
+      console.log("[v0] Error submitting form:", error)
       setSubmitStatus("error")
       setTimeout(() => setSubmitStatus("idle"), 3000)
     } finally {
@@ -119,16 +122,39 @@ export default function Contact() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true)
+          }
+        })
+      },
+      { threshold: 0.1 },
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <section id="contact" className="py-20 md:py-32 bg-muted/50">
+    <section id="contact" className="py-20 md:py-32 bg-muted/50" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div
+          className={`text-center mb-16 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        >
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">{t.title}</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t.subtitle}</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12">
-          <div className="space-y-8">
+          <div
+            className={`space-y-8 transition-all duration-1000 delay-200 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"}`}
+          >
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <MapPin className="w-6 h-6 text-yellow-500 mt-1" />
@@ -178,7 +204,9 @@ export default function Contact() {
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-xl p-8">
+          <div
+            className={`bg-card border border-border rounded-xl p-8 transition-all duration-1000 delay-300 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}
+          >
             <h3 className="text-2xl font-bold text-foreground mb-6">{t.sendMessage}</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -246,7 +274,9 @@ export default function Contact() {
           </div>
         </div>
 
-        <div className="mt-12 rounded-xl overflow-hidden border border-border h-96 bg-muted">
+        <div
+          className={`mt-12 rounded-xl overflow-hidden border border-border h-96 bg-muted transition-all duration-1000 delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+        >
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11944.138448482061!2d60.614431372929936!3d41.54684781582078!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x41dfc9a44bf3f7ef%3A0x9e65195a8462452e!2sUrganch%20shahar%201-son%20ixtisoslashtirilgan%20maktab-internat!5e0!3m2!1sru!2sus!4v1762104173425!5m2!1sru!2sus"
             width="100%"

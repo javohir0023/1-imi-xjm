@@ -1,13 +1,15 @@
 "use client"
 
-import { Trophy, Medal, Star, Download, ChevronDown } from 'lucide-react'
+import { Trophy, Medal, Star, Download, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { useLanguage } from "@/lib/language-context"
 
 export default function Achievements() {
   const { language } = useLanguage()
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
 
   const allStudents = [
     { name: "Gandjayev Amirxon", class: "8-01", cert: "CEFR C1 (65)" },
@@ -119,7 +121,8 @@ export default function Achievements() {
       class_column: "Sinf",
       cert_column: "Sertifikat",
       show_more: "Ko'proq ko'rish",
-      total_text: (count: number) => `Jami ${count} o'quvchi xalqaro sertifikatga ega. CEFR (C1, B2, B1), IELTS, SAT va boshqa xalqaro standartlar bo'yicha.`,
+      total_text: (count: number) =>
+        `Jami ${count} o'quvchi xalqaro sertifikatga ega. CEFR (C1, B2, B1), IELTS, SAT va boshqa xalqaro standartlar bo'yicha.`,
     },
     ru: {
       title: "Достижения",
@@ -136,7 +139,8 @@ export default function Achievements() {
       class_column: "Класс",
       cert_column: "Сертификат",
       show_more: "Показать больше",
-      total_text: (count: number) => `Всего ${count} учеников имеют международные сертификаты. По стандартам CEFR (C1, B2, B1), IELTS, SAT и другим международным стандартам.`,
+      total_text: (count: number) =>
+        `Всего ${count} учеников имеют международные сертификаты. По стандартам CEFR (C1, B2, B1), IELTS, SAT и другим международным стандартам.`,
     },
     en: {
       title: "Achievements",
@@ -153,7 +157,8 @@ export default function Achievements() {
       class_column: "Class",
       cert_column: "Certificate",
       show_more: "Show More",
-      total_text: (count: number) => `Total ${count} students have international certificates. According to CEFR (C1, B2, B1), IELTS, SAT and other international standards.`,
+      total_text: (count: number) =>
+        `Total ${count} students have international certificates. According to CEFR (C1, B2, B1), IELTS, SAT and other international standards.`,
     },
   }
 
@@ -173,18 +178,18 @@ export default function Achievements() {
               "Немецкий и французский языковые сертификаты",
             ]
           : language === "en"
-          ? [
-              "CEFR (European Framework) - 50+ students",
-              "IELTS International English Language Testing System",
-              "SAT - American Educational Test",
-              "German and French Language Certificates",
-            ]
-          : [
-              "CEFR (European Framework) - 50+ o'quvchi",
-              "IELTS International English Language Testing System",
-              "SAT - Amerika Ta'lim Testi",
-              "German va French Language Certificates",
-            ],
+            ? [
+                "CEFR (European Framework) - 50+ students",
+                "IELTS International English Language Testing System",
+                "SAT - American Educational Test",
+                "German and French Language Certificates",
+              ]
+            : [
+                "CEFR (European Framework) - 50+ o'quvchi",
+                "IELTS International English Language Testing System",
+                "SAT - Amerika Ta'lim Testi",
+                "German va French Language Certificates",
+              ],
     },
     {
       icon: Medal,
@@ -199,18 +204,18 @@ export default function Achievements() {
               "Презентации на научных конференциях",
             ]
           : language === "en"
-          ? [
-              "High places at regional olympiads",
-              "Participation in republican competitions",
-              "Medals at international STEM competitions",
-              "Presentations at student conferences",
-            ]
-          : [
-              "Viloyat fan olimpiadalarida yuqori o'rinlar",
-              "Respublika darajasidagi tanlovlarda ishtirok",
-              "Xalqaro STEM tanlovlarida medallari",
-              "O'quvchilar ilmiy konferentsiyasida taqdimotlar",
-            ],
+            ? [
+                "High places at regional olympiads",
+                "Participation in republican competitions",
+                "Medals at international STEM competitions",
+                "Presentations at student conferences",
+              ]
+            : [
+                "Viloyat fan olimpiadalarida yuqori o'rinlar",
+                "Respublika darajasidagi tanlovlarda ishtirok",
+                "Xalqaro STEM tanlovlarida medallari",
+                "O'quvchilar ilmiy konferentsiyasida taqdimotlar",
+              ],
     },
     {
       icon: Star,
@@ -225,31 +230,50 @@ export default function Achievements() {
               "Участники программ лидерства",
             ]
           : language === "en"
-          ? [
-              "Republican medals in sports",
-              "Certificates in music and art competitions",
-              "Participants in international cultural exchanges",
-              "Participants in leadership programs",
-            ]
-          : [
-              "Sportda respublika medalillari",
-              "Musiqa va san'at tanlovlarida sertifikatlar",
-              "Xalqaro madaniy almashuvlarda ishtirokchilar",
-              "Liderlik dasturlarida foydalanuvchilar",
-            ],
+            ? [
+                "Republican medals in sports",
+                "Certificates in music and art competitions",
+                "Participants in international cultural exchanges",
+                "Participants in leadership programs",
+              ]
+            : [
+                "Sportda respublika medalillari",
+                "Musiqa va san'at tanlovlarida sertifikatlar",
+                "Xalqaro madaniy almashuvlarda ishtirokchilar",
+                "Liderlik dasturlarida foydalanuvchilar",
+              ],
     },
   ]
 
   const achievementImages = [
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_2025-11-02_18-20-01-Js5pcVeyHYZRA9KUHTWsFyMC3bJAQ6.jpg",
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_2025-11-02_18-20-45-IWjl8xb4wOwAANmrnMk10kFEpCkqJ5.jpg",
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_2025-11-02_18-20-25-2TDBdTiTHJBAqCprKWnh8C2kPAvI0T.jpg",
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_2025-11-02_18-20-10-O0Ob6I1ZFi0sT5jIvj08rQYkPSB9Xe.jpg",
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_2025-11-02_18-20-18-mxjdSbKFl8bVOThr2xrfQxhuUsij0U.jpg",
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_2025-11-02_18-20-37-UKIzF3ASopG2j1wwfi0JSdZJgrzAb6.jpg",
+    "/images/photo-2025-11-02-18-20-01.jpg",
+    "/images/photo-2025-11-02-18-20-45.jpg",
+    "/images/photo-2025-11-02-18-20-25.jpg",
+    "/images/photo-2025-11-02-18-20-10.jpg",
+    "/images/photo-2025-11-02-18-20-18.jpg",
+    "/images/photo-2025-11-02-18-20-37.jpg",
   ]
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true)
+          }
+        })
+      },
+      { threshold: 0.1 },
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -259,14 +283,18 @@ export default function Achievements() {
   }, [achievementImages.length])
 
   return (
-    <section id="achievements" className="py-20 md:py-32 bg-background">
+    <section id="achievements" className="py-20 md:py-32 bg-background" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div
+          className={`text-center mb-16 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        >
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">{t.title}</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t.subtitle}</p>
         </div>
 
-        <div className="mb-16 rounded-xl overflow-hidden border border-border bg-muted">
+        <div
+          className={`mb-16 rounded-xl overflow-hidden border border-border bg-muted transition-all duration-1000 delay-200 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"}`}
+        >
           <div className="relative w-full h-96 md:h-[500px]">
             <Image
               src={achievementImages[currentImageIndex] || "/placeholder.svg"}
@@ -294,7 +322,8 @@ export default function Achievements() {
             return (
               <div
                 key={index}
-                className="bg-card border border-border rounded-xl p-8 hover:shadow-lg transition-shadow"
+                className={`bg-card border border-border rounded-xl p-8 hover:shadow-lg transition-all duration-1000 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"}`}
+                style={{ transitionDelay: `${300 + index * 150}ms` }}
               >
                 <div className="flex items-center gap-3 mb-4">
                   <Icon className="w-8 h-8 text-yellow-500" />
@@ -316,7 +345,9 @@ export default function Achievements() {
           })}
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-8">
+        <div
+          className={`bg-card border border-border rounded-xl p-8 transition-all duration-1000 delay-700 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}
+        >
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-2xl font-bold text-foreground">{t.table_title}</h3>
             <Button variant="outline" size="sm" className="gap-2 bg-transparent">
