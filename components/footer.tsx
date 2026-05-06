@@ -228,7 +228,7 @@ export default function Footer() {
                 >
                   Xajiboyev Javoxir
                 </a>{" "}
-                va sayt ma'lumotlariga javobgar Siddiqov Saidmuhammad
+                !
               </>
             )}
             {language === "ru" && (
@@ -242,7 +242,7 @@ export default function Footer() {
                 >
                   Хажибоев Джавохир
                 </a>{" "}
-                и ответственный за информацию сайта Сиддиков Саидмухаммад
+                !
               </>
             )}
             {language === "en" && (
@@ -256,7 +256,7 @@ export default function Footer() {
                 >
                   Khajiboev Javohir
                 </a>{" "}
-                and site information manager Siddiqov Saidmukhammad
+              !
               </>
             )}
           </p>
