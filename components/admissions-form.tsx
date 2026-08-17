@@ -28,7 +28,7 @@ export default function AdmissionsForm() {
       info: "Qo'shimcha Ma'lumot",
       infoPlaceholder: "Sizning ma'lumotingiz...",
       submit: "Arizani Yuborish",
-      success: "✅ Ma'lumot muvaffaqiyatli yuborildi!",
+      success: "✅ Arizangiz muvaffaqiyatli yuborildi.",
       error: "Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.",
     },
     ru: {
@@ -77,15 +77,22 @@ export default function AdmissionsForm() {
         body: JSON.stringify(formData),
       })
 
-      if (!response.ok) throw new Error("Submit failed")
+      const result = await response.json().catch(() => null)
 
-      // Success - data was sent to Google Sheets
+      if (!response.ok || !result?.success) {
+        setMessage(`❌ ${result?.message || t.error}`)
+        setTimeout(() => setMessage(""), 5000)
+        return
+      }
+
+      // Success - application was sent via Telegram
       setMessage(t.success)
       setFormData({ name: "", email: "", phone: "", info: "" })
       setTimeout(() => setMessage(""), 5000)
     } catch (error) {
       console.error("Error submitting form:", error)
-      setMessage(t.error)
+      setMessage(`❌ ${t.error}`)
+      setTimeout(() => setMessage(""), 5000)
     } finally {
       setLoading(false)
     }

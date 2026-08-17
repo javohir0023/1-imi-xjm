@@ -1,53 +1,103 @@
-import { NextRequest, NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
+import { type NextRequest, NextResponse } from "next/server"
 
-function db() {
-  return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  })
-}
+// Fields the current admissions form always sends. Anything beyond these
+// is included automatically in the Telegram message as extra lines, so
+// new fields added to the form later don't need code changes here.
+const KNOWN_FIELDS = ["name", "email", "phone", "info"]
 
-function isAdmin(request: NextRequest) {
-  return request.cookies.get("admin_session")?.value === process.env.ADMIN_SESSION_TOKEN
+// Escape special HTML characters so user input can never break Telegram's
+// HTML parse_mode formatting (or inject markup into the message).
+function escapeHtml(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
 }
 
 export async function POST(request: NextRequest) {
+  let data: Record<string, unknown>
+
   try {
-    const data = await request.json()
-    const { name, email, phone, info } = data
-    if (!name || !email || !phone) return NextResponse.json({ success: false, message: "Majburiy maydonlar to'ldirilmagan" }, { status: 400 })
-
-    const { error } = await db().from("applications").insert({ name, email, phone, info: info || "" })
-    if (error) throw error
-    return NextResponse.json({ success: true, message: "Ariza muvaffaqiyatli yuborildi" })
-  } catch (error) {
-    console.error(error)
-    return NextResponse.json({ success: false, message: "Arizani saqlashda xatolik" }, { status: 500 })
+    data = await request.json()
+  } catch {
+    return NextResponse.json({ success: false, message: "Noto'g'ri so'rov formati" }, { status: 400 })
   }
-}
 
-export async function GET(request: NextRequest) {
-  if (!isAdmin(request)) return NextResponse.json({ success: false, message: "Ruxsat yo'q" }, { status: 401 })
-  const { data, error } = await db().from("applications").select("*").order("created_at", { ascending: false })
-  if (error) return NextResponse.json({ success: false, message: error.message }, { status: 500 })
-  return NextResponse.json({ success: true, applications: data })
-}
+  const { name, email, phone, info } = data as {
+    name?: string
+    email?: string
+    phone?: string
+    info?: string
+  }
 
-export async function PATCH(request: NextRequest) {
-  if (!isAdmin(request)) return NextResponse.json({ success: false, message: "Ruxsat yo'q" }, { status: 401 })
-  const { id, status } = await request.json()
-  const allowed = ["new", "reviewed", "accepted", "rejected"]
-  if (!id || !allowed.includes(status)) return NextResponse.json({ success: false, message: "Noto'g'ri ma'lumot" }, { status: 400 })
-  const { error } = await db().from("applications").update({ status }).eq("id", id)
-  if (error) return NextResponse.json({ success: false, message: error.message }, { status: 500 })
-  return NextResponse.json({ success: true })
-}
+  if (!name || !email || !phone) {
+    return NextResponse.json(
+      { success: false, message: "Majburiy maydonlar to'ldirilmagan" },
+      { status: 400 },
+    )
+  }
 
-export async function DELETE(request: NextRequest) {
-  if (!isAdmin(request)) return NextResponse.json({ success: false, message: "Ruxsat yo'q" }, { status: 401 })
-  const id = request.nextUrl.searchParams.get("id")
-  if (!id) return NextResponse.json({ success: false, message: "ID kerak" }, { status: 400 })
-  const { error } = await db().from("applications").delete().eq("id", id)
-  if (error) return NextResponse.json({ success: false, message: error.message }, { status: 500 })
-  return NextResponse.json({ success: true })
+  const botToken = process.env.TELEGRAM_BOT_TOKEN
+  const chatId = process.env.TELEGRAM_CHAT_ID
+
+  if (!botToken || !chatId) {
+    // Never leak *why* to the client — just log server-side for the admin.
+    console.error("[applications] TELEGRAM_BOT_TOKEN yoki TELEGRAM_CHAT_ID environment variable sozlanmagan")
+    return NextResponse.json(
+      { success: false, message: "Ariza yuborishda xatolik yuz berdi. Iltimos, birozdan so'ng qayta urinib ko'ring." },
+      { status: 500 },
+    )
+  }
+
+  const createdAt = new Date().toLocaleString("uz-UZ", {
+    timeZone: "Asia/Tashkent",
+    dateStyle: "medium",
+    timeStyle: "short",
+  })
+
+  let message =
+    `🔔 <b>YANGI ARIZA</b>\n\n` +
+    `👤 <b>Ism:</b> ${escapeHtml(name)}\n` +
+    `📞 <b>Telefon:</b> ${escapeHtml(phone)}\n` +
+    `📧 <b>Email:</b> ${escapeHtml(email)}\n` +
+    `📝 <b>Ariza:</b>\n${escapeHtml(info || "—")}\n\n` +
+    `🕐 <b>Sana:</b> ${escapeHtml(createdAt)}`
+
+  // Append any extra fields the form might include beyond the known ones.
+  const extraEntries = Object.entries(data).filter(([key]) => !KNOWN_FIELDS.includes(key))
+  if (extraEntries.length > 0) {
+    const extraLines = extraEntries
+      .map(([key, value]) => `<b>${escapeHtml(key)}:</b> ${escapeHtml(value)}`)
+      .join("\n")
+    message += `\n\n${extraLines}`
+  }
+
+  try {
+    const telegramResponse = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        parse_mode: "HTML",
+      }),
+    })
+
+    if (!telegramResponse.ok) {
+      const errorBody = await telegramResponse.text().catch(() => "")
+      console.error("[applications] Telegram API xatoligi:", telegramResponse.status, errorBody)
+      return NextResponse.json(
+        { success: false, message: "Ariza yuborishda xatolik yuz berdi. Iltimos, birozdan so'ng qayta urinib ko'ring." },
+        { status: 502 },
+      )
+    }
+
+    return NextResponse.json({ success: true, message: "Arizangiz muvaffaqiyatli yuborildi." })
+  } catch (error) {
+    console.error("[applications] Telegramga ulanishda kutilmagan xatolik:", error)
+    return NextResponse.json(
+      { success: false, message: "Ariza yuborishda xatolik yuz berdi. Iltimos, birozdan so'ng qayta urinib ko'ring." },
+      { status: 500 },
+    )
+  }
 }
