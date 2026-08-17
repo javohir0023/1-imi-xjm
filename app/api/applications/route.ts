@@ -1,18 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
 
-// Fields the current admissions form always sends. Anything beyond these
-// is included automatically in the Telegram message as extra lines, so
-// new fields added to the form later don't need code changes here.
-const KNOWN_FIELDS = ["name", "email", "phone", "info"]
-
-// Escape special HTML characters so user input can never break Telegram's
-// HTML parse_mode formatting (or inject markup into the message).
-function escapeHtml(value: unknown): string {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-}
+// Web3Forms endpoint: accepts a JSON POST and emails the submission to the
+// address tied to the access key. Free tier: 250 submissions/month, no
+// account/dashboard setup beyond generating the access key at web3forms.com.
+const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit"
 
 export async function POST(request: NextRequest) {
   let data: Record<string, unknown>
@@ -37,55 +28,38 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const botToken = process.env.TELEGRAM_BOT_TOKEN
-  const chatId = process.env.TELEGRAM_CHAT_ID
+  const accessKey = process.env.WEB3FORMS_ACCESS_KEY
 
-  if (!botToken || !chatId) {
+  if (!accessKey) {
     // Never leak *why* to the client — just log server-side for the admin.
-    console.error("[applications] TELEGRAM_BOT_TOKEN yoki TELEGRAM_CHAT_ID environment variable sozlanmagan")
+    console.error("[applications] WEB3FORMS_ACCESS_KEY environment variable sozlanmagan")
     return NextResponse.json(
       { success: false, message: "Ariza yuborishda xatolik yuz berdi. Iltimos, birozdan so'ng qayta urinib ko'ring." },
       { status: 500 },
     )
   }
 
-  const createdAt = new Date().toLocaleString("uz-UZ", {
-    timeZone: "Asia/Tashkent",
-    dateStyle: "medium",
-    timeStyle: "short",
-  })
-
-  let message =
-    `🔔 <b>YANGI ARIZA</b>\n\n` +
-    `👤 <b>Ism:</b> ${escapeHtml(name)}\n` +
-    `📞 <b>Telefon:</b> ${escapeHtml(phone)}\n` +
-    `📧 <b>Email:</b> ${escapeHtml(email)}\n` +
-    `📝 <b>Ariza:</b>\n${escapeHtml(info || "—")}\n\n` +
-    `🕐 <b>Sana:</b> ${escapeHtml(createdAt)}`
-
-  // Append any extra fields the form might include beyond the known ones.
-  const extraEntries = Object.entries(data).filter(([key]) => !KNOWN_FIELDS.includes(key))
-  if (extraEntries.length > 0) {
-    const extraLines = extraEntries
-      .map(([key, value]) => `<b>${escapeHtml(key)}:</b> ${escapeHtml(value)}`)
-      .join("\n")
-    message += `\n\n${extraLines}`
-  }
-
   try {
-    const telegramResponse = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    const web3formsResponse = await fetch(WEB3FORMS_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify({
-        chat_id: chatId,
-        text: message,
-        parse_mode: "HTML",
+        access_key: accessKey,
+        subject: "🔔 Yangi ariza — Admissions",
+        from_name: "Maktab sayti — Arizalar",
+        name,
+        email,
+        phone,
+        info: info || "—",
+        // Forward any extra fields the form might send in the future.
+        ...Object.fromEntries(Object.entries(data).filter(([key]) => !["name", "email", "phone", "info"].includes(key))),
       }),
     })
 
-    if (!telegramResponse.ok) {
-      const errorBody = await telegramResponse.text().catch(() => "")
-      console.error("[applications] Telegram API xatoligi:", telegramResponse.status, errorBody)
+    const result = await web3formsResponse.json().catch(() => null)
+
+    if (!web3formsResponse.ok || !result?.success) {
+      console.error("[applications] Web3Forms API xatoligi:", web3formsResponse.status, result)
       return NextResponse.json(
         { success: false, message: "Ariza yuborishda xatolik yuz berdi. Iltimos, birozdan so'ng qayta urinib ko'ring." },
         { status: 502 },
@@ -94,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message: "Arizangiz muvaffaqiyatli yuborildi." })
   } catch (error) {
-    console.error("[applications] Telegramga ulanishda kutilmagan xatolik:", error)
+    console.error("[applications] Web3Forms'ga ulanishda kutilmagan xatolik:", error)
     return NextResponse.json(
       { success: false, message: "Ariza yuborishda xatolik yuz berdi. Iltimos, birozdan so'ng qayta urinib ko'ring." },
       { status: 500 },
