@@ -165,6 +165,28 @@
   ],
   "applications": [
     {
+      "studentName": "jva a",
+      "parentName": "j",
+      "phone": "+99826151541514",
+      "grade": "5-sinf",
+      "region": "Urganch shahar",
+      "message": "zor",
+      "id": "app-1791307481464-p1xni",
+      "status": "yangi",
+      "createdAt": "2026-10-06T17:24:41.464Z"
+    },
+    {
+      "studentName": "Madina Karimova",
+      "parentName": "Karim Valiyev",
+      "phone": "+998912345678",
+      "grade": "7-sinf",
+      "region": "Xiva shahar",
+      "message": "Biologiya va kimyo fanlariga juda qiziqadi",
+      "id": "app-1791306612371-l1s4g",
+      "status": "yangi",
+      "createdAt": "2026-10-06T17:10:12.371Z"
+    },
+    {
       "studentName": "Alisher Valiyev",
       "parentName": "Vali Aliyev",
       "phone": "+998901234567",
@@ -174,6 +196,18 @@
       "id": "app-1791302000110-zwcnn",
       "status": "yangi",
       "createdAt": "2026-10-06T15:53:20.110Z"
+    }
+  ],
+  "contactMessages": [
+    {
+      "name": "Bobur Mansurov",
+      "email": "bobur@mail.uz",
+      "phone": "+998935556677",
+      "subject": "Olimpiada to'garaklari haqida",
+      "message": "Maktabingizda dasturlash va robototexnika to'garaklari bormi?",
+      "id": "msg-1791306612397-s8drk",
+      "status": "yangi",
+      "createdAt": "2026-10-06T17:10:12.397Z"
     }
   ],
   "achievements": [

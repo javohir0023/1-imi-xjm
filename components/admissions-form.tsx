@@ -7,63 +7,86 @@ import { useLanguage } from "@/lib/language-context"
 export default function AdmissionsForm() {
   const { language } = useLanguage()
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    info: "",
+    studentName: "",
+    parentName: "",
+    phone: "+998",
+    grade: "5-sinf",
+    region: "Urganch shahar",
+    message: "",
   })
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
 
   const translations = {
     uz: {
-      title: "Arizalar",
-      subtitle: "Maktabga qabul bo'lish uchun arizani topshiring",
-      name: "Ism-Familiya",
-      namePlaceholder: "Sizning ismingiz",
-      email: "Email",
-      emailPlaceholder: "sizning@email.com",
-      phone: "Telefon",
-      phonePlaceholder: "+998 XX XXX XX XX",
-      info: "Qo'shimcha Ma'lumot",
-      infoPlaceholder: "Sizning ma'lumotingiz...",
+      title: "Qabul Arizalari",
+      subtitle: "Urganch 1-IMI ga o'quvchi qabul qilish uchun ariza qoldiring",
+      studentName: "O'quvchining F.I.Sh.",
+      studentNamePlaceholder: "Masalan: Karimov Jasurbek Alisher o'g'li",
+      parentName: "Ota-onaning F.I.Sh.",
+      parentNamePlaceholder: "Masalan: Karimov Alisher",
+      phone: "Telefon Raqami",
+      phonePlaceholder: "+998 90 123 45 67",
+      grade: "Topshirilayotgan Sinf",
+      region: "Yashash Hududi",
+      info: "Qo'shimcha Ma'lumot / Izoh",
+      infoPlaceholder: "Qiziqishlari, yutuqlari yoki savollaringiz...",
       submit: "Arizani Yuborish",
-      success: "✅ Arizangiz muvaffaqiyatli yuborildi.",
+      success: "✅ Arizangiz muvaffaqiyatli qabul qilindi!",
       error: "Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.",
     },
     ru: {
-      title: "Приложения",
-      subtitle: "Подайте заявку на поступление в школу",
-      name: "Полное имя",
-      namePlaceholder: "Ваше имя",
-      email: "Электронная почта",
-      emailPlaceholder: "ваша@почта.com",
+      title: "Заявления на приём",
+      subtitle: "Подайте заявку на поступление в Урганч 1-ИМИ",
+      studentName: "Ф.И.О. ученика",
+      studentNamePlaceholder: "Например: Каримов Жасурбек",
+      parentName: "Ф.И.О. родителя",
+      parentNamePlaceholder: "Например: Каримов Алишер",
       phone: "Телефон",
-      phonePlaceholder: "+998 XX XXX XX XX",
+      phonePlaceholder: "+998 90 123 45 67",
+      grade: "Класс",
+      region: "Регион проживания",
       info: "Дополнительная информация",
-      infoPlaceholder: "Ваша информация...",
-      submit: "Отправить приложение",
-      success: "✅ Информация успешно отправлена!",
+      infoPlaceholder: "Интересы, достижения или вопросы...",
+      submit: "Отправить заявку",
+      success: "✅ Ваша заявка успешно принята!",
       error: "Произошла ошибка. Пожалуйста, попробуйте еще раз.",
     },
     en: {
-      title: "Admissions",
-      subtitle: "Submit your application to join our school",
-      name: "Full Name",
-      namePlaceholder: "Your name",
-      email: "Email",
-      emailPlaceholder: "your@email.com",
-      phone: "Phone",
-      phonePlaceholder: "+998 XX XXX XX XX",
+      title: "Admissions Applications",
+      subtitle: "Submit an application for admission to Urgench 1-IMI",
+      studentName: "Student Full Name",
+      studentNamePlaceholder: "e.g. Jasurbek Karimov",
+      parentName: "Parent/Guardian Full Name",
+      parentNamePlaceholder: "e.g. Alisher Karimov",
+      phone: "Phone Number",
+      phonePlaceholder: "+998 90 123 45 67",
+      grade: "Applying Grade",
+      region: "Region/District",
       info: "Additional Information",
-      infoPlaceholder: "Your information...",
+      infoPlaceholder: "Interests, awards or questions...",
       submit: "Submit Application",
-      success: "✅ Information submitted successfully!",
+      success: "✅ Your application was submitted successfully!",
       error: "An error occurred. Please try again.",
     },
   }
 
   const t = translations[language]
+
+  const grades = ["5-sinf", "6-sinf", "7-sinf", "8-sinf", "9-sinf", "10-sinf", "11-sinf"]
+  const regions = [
+    "Urganch shahar",
+    "Xiva shahar",
+    "Xonqa tumani",
+    "Shovot tumani",
+    "Gurlan tumani",
+    "Yangibozor tumani",
+    "Bog'ot tumani",
+    "Hazorasp tumani",
+    "Qo'shko'pir tumani",
+    "Tuproqqal'a tumani",
+    "Boshqa hudud",
+  ]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -85,9 +108,15 @@ export default function AdmissionsForm() {
         return
       }
 
-      // Success - application was sent via Telegram
       setMessage(t.success)
-      setFormData({ name: "", email: "", phone: "", info: "" })
+      setFormData({
+        studentName: "",
+        parentName: "",
+        phone: "+998",
+        grade: "5-sinf",
+        region: "Urganch shahar",
+        message: "",
+      })
       setTimeout(() => setMessage(""), 5000)
     } catch (error) {
       console.error("Error submitting form:", error)
@@ -109,45 +138,75 @@ export default function AdmissionsForm() {
         <div className="bg-card border border-border rounded-xl p-8">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">{t.name}</label>
+              <label className="block text-sm font-medium text-foreground mb-2">{t.studentName}</label>
               <input
                 type="text"
-                placeholder={t.namePlaceholder}
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder={t.studentNamePlaceholder}
+                value={formData.studentName}
+                onChange={(e) => setFormData({ ...formData, studentName: e.target.value })}
                 required
                 className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">{t.email}</label>
+              <label className="block text-sm font-medium text-foreground mb-2">{t.parentName}</label>
               <input
-                type="email"
-                placeholder={t.emailPlaceholder}
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                type="text"
+                placeholder={t.parentNamePlaceholder}
+                value={formData.parentName}
+                onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
                 required
                 className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">{t.phone}</label>
-              <input
-                type="tel"
-                placeholder={t.phonePlaceholder}
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">{t.phone}</label>
+                <input
+                  type="tel"
+                  placeholder={t.phonePlaceholder}
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  required
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">{t.grade}</label>
+                <select
+                  value={formData.grade}
+                  onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                >
+                  {grades.map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">{t.region}</label>
+                <select
+                  value={formData.region}
+                  onChange={(e) => setFormData({ ...formData, region: e.target.value })}
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+                >
+                  {regions.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">{t.info}</label>
               <textarea
                 placeholder={t.infoPlaceholder}
-                value={formData.info}
-                onChange={(e) => setFormData({ ...formData, info: e.target.value })}
-                rows={4}
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                rows={3}
                 className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
               ></textarea>
             </div>

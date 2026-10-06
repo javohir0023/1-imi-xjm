@@ -28,8 +28,8 @@ export const metadata: Metadata = {
     "Maktab profili",
     "Maktab rejimi",
   ],
-  authors: [{ name: "Urganch 1-IMI" }],
-  creator: "Urganch shahar 1-son ixtisoslashtirilgan maktab-internati",
+  authors: [{ name: "Javoxir Xajiboyev" }, { name: "Urganch 1-IMI" }],
+  creator: "Javoxir Xajiboyev",
   publisher: "Ixtisoslashtirilgan ta'lim muassasalari agentligi",
   formatDetection: {
     email: false,

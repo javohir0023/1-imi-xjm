@@ -33,6 +33,7 @@ export default function Footer() {
       address: "220100, Xorazm viloyati, Urganch shahar, Sheroziy ko'chasi, 2-uy",
       phone: "+998 (62) 223-20-31",
       email: "gmail@urganchimi.uz",
+      founderLabel: "Sayt Asoschisi",
       copyright: `© ${currentYear} Urganch shahar 1-son ixtisoslashtirilgan maktab-internati. Barcha huquqlar himoyalangan.`,
     },
     ru: {
@@ -58,6 +59,7 @@ export default function Footer() {
       address: "220100, Хорезмская область, г. Урганч, ул. Шерозий, д. 2",
       phone: "+998 (62) 223-20-31",
       email: "gmail@urganchimi.uz",
+      founderLabel: "Основатель сайта",
       copyright: `© ${currentYear} Урганчская специализированная школа-интернат №1. Все права защищены.`,
     },
     en: {
@@ -83,6 +85,7 @@ export default function Footer() {
       address: "2 Sheroziy Street, Urgench 220100, Khorezm Region, Uzbekistan",
       phone: "+998 (62) 223-20-31",
       email: "gmail@urganchimi.uz",
+      founderLabel: "Website Founder",
       copyright: `© ${currentYear} Specialized Boarding School No. 1 in Urgench. All rights reserved.`,
     },
   }[language]
@@ -284,16 +287,23 @@ export default function Footer() {
         </div>
 
         {/* Bottom Credits & Copyright */}
-        <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400">
+        <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-400 border-t border-white/10 mt-6">
           <p>{t.copyright}</p>
-          <div className="flex items-center gap-4 text-[11px]">
+
+          {/* Sayt Asoschisi & Credits */}
+          <div className="flex flex-wrap items-center justify-center gap-3 text-[11px]">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-[#C9A227]/40 text-slate-200">
+              <span className="text-slate-300">{t.founderLabel}:</span>
+              <span className="text-[#C9A227] font-extrabold tracking-wide">Javoxir Xajiboyev</span>
+            </div>
+            <span className="text-slate-600 hidden sm:inline">·</span>
             <span>Urganch shahar 1-son IMI rasmiy veb-sayti</span>
-            <span>·</span>
+            <span className="text-slate-600 hidden sm:inline">·</span>
             <a
               href="https://dish-load-05854082.figma.site/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#C9A227] hover:underline"
+              className="text-[#C9A227] hover:underline font-semibold"
             >
               Maktab rejimi
             </a>

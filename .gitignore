@@ -1,4 +1,5 @@
-# dependencies
+# dependencies (HECH QACHON GITHUBGA YUKLANMAYDI)
+node_modules/
 /node_modules
 /.pnp
 .pnp.js
@@ -6,16 +7,19 @@
 # testing
 /coverage
 
-# next.js
+# next.js build output (HECH QACHON GITHUBGA YUKLANMAYDI)
+.next/
 /.next/
 /out/
-
-# production
 /build
+
+# zip archives
+*.zip
 
 # misc
 .DS_Store
 *.pem
+*.log
 
 # debug
 npm-debug.log*
@@ -23,10 +27,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (never commit secrets like TELEGRAM_BOT_TOKEN)
+# env files (maxfiy parollar)
 .env
 .env*.local
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+

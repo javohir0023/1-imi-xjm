@@ -2,77 +2,93 @@ import { type NextRequest, NextResponse } from "next/server"
 import { addApplication } from "@/lib/db"
 import { sendApplicationTelegramNotification } from "@/lib/telegram"
 
+export const dynamic = "force-dynamic"
+export const revalidate = 0
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { studentName, parentName, phone, grade, region, message, honeypot } = body
+    const {
+      studentName,
+      name,
+      fullName,
+      parentName,
+      phone,
+      grade,
+      region,
+      message,
+      info,
+      honeypot,
+    } = body
 
-    // Anti-spam check
+    // Anti-spam check: honeypot bot trap
     if (honeypot) {
-      return NextResponse.json({ success: true, message: "Arizangiz qabul qilindi." })
+      return NextResponse.json(
+        { success: true, message: "Arizangiz qabul qilindi." },
+        { headers: { "Cache-Control": "no-store" } },
+      )
     }
 
-    // Validation
-    if (!studentName || typeof studentName !== "string" || studentName.trim().length < 3) {
+    // Resolve student name from multiple possible keys
+    const resolvedStudentName = (studentName || name || fullName || "").toString().trim()
+    if (!resolvedStudentName || resolvedStudentName.length < 2) {
       return NextResponse.json(
         { success: false, message: "Iltimos, o'quvchining to'liq ism-familiyasini kiriting." },
-        { status: 400 },
+        { status: 400, headers: { "Cache-Control": "no-store" } },
       )
     }
 
-    if (!parentName || typeof parentName !== "string" || parentName.trim().length < 3) {
-      return NextResponse.json(
-        { success: false, message: "Iltimos, ota-onaning to'liq ism-familiyasini kiriting." },
-        { status: 400 },
-      )
-    }
+    // Resolve parent name
+    const resolvedParentName = (parentName || "").toString().trim() || "Ko'rsatilmagan"
 
-    if (!phone || typeof phone !== "string" || phone.trim().length < 7) {
+    // Resolve phone
+    const resolvedPhone = (phone || "").toString().trim()
+    if (!resolvedPhone || resolvedPhone.length < 7) {
       return NextResponse.json(
         { success: false, message: "Iltimos, to'g'ri telefon raqamini kiriting (+998...)." },
-        { status: 400 },
+        { status: 400, headers: { "Cache-Control": "no-store" } },
       )
     }
 
-    if (!grade || typeof grade !== "string") {
-      return NextResponse.json(
-        { success: false, message: "Iltimos, topshirilayotgan sinfni tanlang." },
-        { status: 400 },
-      )
-    }
-
-    if (!region || typeof region !== "string") {
-      return NextResponse.json(
-        { success: false, message: "Iltimos, yashash hududingizni tanlang." },
-        { status: 400 },
-      )
-    }
+    // Resolve grade & region
+    const resolvedGrade = (grade || "5-sinf").toString().trim()
+    const resolvedRegion = (region || "Urganch shahar").toString().trim()
+    const resolvedMessage = (message || info || "").toString().trim()
 
     // Store in internal database
     const savedApp = addApplication({
-      studentName: studentName.trim(),
-      parentName: parentName.trim(),
-      phone: phone.trim(),
-      grade: grade.trim(),
-      region: region.trim(),
-      message: message ? String(message).trim() : "",
+      studentName: resolvedStudentName,
+      parentName: resolvedParentName,
+      phone: resolvedPhone,
+      grade: resolvedGrade,
+      region: resolvedRegion,
+      message: resolvedMessage,
     })
 
-    // Forward Telegram notification to Admin
+    console.log(`[Applications API] New application saved: ID=${savedApp.id}, Student=${savedApp.studentName}`)
+
+    // Forward Telegram notification to Admin (background)
     sendApplicationTelegramNotification(savedApp).catch((err) => {
       console.error("[Applications API] Background Telegram notification failed:", err)
     })
 
-    return NextResponse.json({
-      success: true,
-      message: "Arizangiz muvaffaqiyatli qabul qilindi! Qabul komissiyasi tez orada siz bilan bog'lanadi.",
-      applicationId: savedApp.id,
-    })
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Arizangiz muvaffaqiyatli qabul qilindi! Qabul komissiyasi tez orada siz bilan bog'lanadi.",
+        applicationId: savedApp.id,
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        },
+      },
+    )
   } catch (error) {
     console.error("[Applications API] Error processing application:", error)
     return NextResponse.json(
       { success: false, message: "Texnik xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko'ring." },
-      { status: 500 },
+      { status: 500, headers: { "Cache-Control": "no-store" } },
     )
   }
 }

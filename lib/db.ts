@@ -1,6 +1,6 @@
 import fs from "fs"
 import path from "path"
-import { NewsItem, ApplicationItem, AchievementItem, TeacherItem, GalleryItem } from "./types"
+import { NewsItem, ApplicationItem, AchievementItem, TeacherItem, GalleryItem, ContactMessageItem } from "./types"
 import { INITIAL_NEWS, INITIAL_ACHIEVEMENTS, INITIAL_TEACHERS, INITIAL_GALLERY } from "./data/initial-data"
 
 const DB_PATH = path.join(process.cwd(), "lib", "data", "db.json")
@@ -8,6 +8,7 @@ const DB_PATH = path.join(process.cwd(), "lib", "data", "db.json")
 interface DatabaseSchema {
   news: NewsItem[]
   applications: ApplicationItem[]
+  contactMessages?: ContactMessageItem[]
   achievements: AchievementItem[]
   teachers: TeacherItem[]
   gallery: GalleryItem[]
@@ -21,6 +22,7 @@ interface DatabaseSchema {
 const INITIAL_DATA: DatabaseSchema = {
   news: INITIAL_NEWS,
   applications: [],
+  contactMessages: [],
   achievements: INITIAL_ACHIEVEMENTS,
   teachers: INITIAL_TEACHERS,
   gallery: INITIAL_GALLERY,
@@ -43,6 +45,7 @@ export function getDb(): DatabaseSchema {
     return {
       news: parsed.news || INITIAL_DATA.news,
       applications: parsed.applications || [],
+      contactMessages: parsed.contactMessages || [],
       achievements: parsed.achievements || INITIAL_DATA.achievements,
       teachers: parsed.teachers || INITIAL_DATA.teachers,
       gallery: parsed.gallery || INITIAL_DATA.gallery,
@@ -56,12 +59,24 @@ export function getDb(): DatabaseSchema {
 
 export function saveDb(data: DatabaseSchema): boolean {
   try {
-    fs.mkdirSync(path.dirname(DB_PATH), { recursive: true })
-    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), "utf-8")
+    const dir = path.dirname(DB_PATH)
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
+    // Safe atomic write
+    const tempPath = `${DB_PATH}.tmp.${Date.now()}`
+    fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), "utf-8")
+    fs.renameSync(tempPath, DB_PATH)
     return true
   } catch (error) {
-    console.error("[Database] Error saving db.json:", error)
-    return false
+    console.error("[Database] Error saving db.json, falling back to direct write:", error)
+    try {
+      fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), "utf-8")
+      return true
+    } catch (err2) {
+      console.error("[Database] Direct write also failed:", err2)
+      return false
+    }
   }
 }
 
@@ -139,6 +154,52 @@ export function deleteApplication(id: string): boolean {
   const initialLen = db.applications.length
   db.applications = db.applications.filter((a) => a.id !== id)
   if (db.applications.length !== initialLen) {
+    saveDb(db)
+    return true
+  }
+  return false
+}
+
+// Contact Messages functions (Murojaatlar)
+export function getContactMessages(): ContactMessageItem[] {
+  const db = getDb()
+  return db.contactMessages || []
+}
+
+export function addContactMessage(msg: Omit<ContactMessageItem, "id" | "createdAt" | "status">): ContactMessageItem {
+  const db = getDb()
+  if (!db.contactMessages) db.contactMessages = []
+  const newItem: ContactMessageItem = {
+    ...msg,
+    id: "msg-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7),
+    status: "yangi",
+    createdAt: new Date().toISOString(),
+  }
+  db.contactMessages.unshift(newItem)
+  saveDb(db)
+  return newItem
+}
+
+export function updateContactMessageStatus(
+  id: string,
+  status: ContactMessageItem["status"],
+): ContactMessageItem | null {
+  const db = getDb()
+  if (!db.contactMessages) return null
+  const item = db.contactMessages.find((m) => m.id === id)
+  if (!item) return null
+  item.status = status
+  item.updatedAt = new Date().toISOString()
+  saveDb(db)
+  return item
+}
+
+export function deleteContactMessage(id: string): boolean {
+  const db = getDb()
+  if (!db.contactMessages) return false
+  const initialLen = db.contactMessages.length
+  db.contactMessages = db.contactMessages.filter((m) => m.id !== id)
+  if (db.contactMessages.length !== initialLen) {
     saveDb(db)
     return true
   }

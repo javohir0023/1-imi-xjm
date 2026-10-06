@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getApplications, updateApplicationStatus, deleteApplication } from "@/lib/db"
+import { getContactMessages, updateContactMessageStatus, deleteContactMessage } from "@/lib/db"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -22,9 +22,9 @@ export async function GET(request: NextRequest) {
       { status: 401, headers: NO_CACHE_HEADERS },
     )
   }
-  const applications = getApplications()
+  const messages = getContactMessages()
   return NextResponse.json(
-    { success: true, count: applications.length, data: applications },
+    { success: true, count: messages.length, data: messages },
     { headers: NO_CACHE_HEADERS },
   )
 }
@@ -37,17 +37,17 @@ export async function PUT(request: NextRequest) {
     )
   }
   try {
-    const { id, status, notes } = await request.json()
+    const { id, status } = await request.json()
     if (!id || !status) {
       return NextResponse.json(
         { success: false, message: "ID va Status talab qilinadi" },
         { status: 400, headers: NO_CACHE_HEADERS },
       )
     }
-    const updated = updateApplicationStatus(id, status, notes)
+    const updated = updateContactMessageStatus(id, status)
     if (!updated) {
       return NextResponse.json(
-        { success: false, message: "Ariza topilmadi" },
+        { success: false, message: "Xabar topilmadi" },
         { status: 404, headers: NO_CACHE_HEADERS },
       )
     }
@@ -78,7 +78,7 @@ export async function DELETE(request: NextRequest) {
       { status: 400, headers: NO_CACHE_HEADERS },
     )
   }
-  const deleted = deleteApplication(id)
+  const deleted = deleteContactMessage(id)
   return NextResponse.json(
     { success: deleted },
     { headers: NO_CACHE_HEADERS },

@@ -74,3 +74,16 @@ export interface GalleryItem {
   imageUrl: string
   date?: string
 }
+
+export interface ContactMessageItem {
+  id: string
+  name: string
+  email: string
+  phone?: string
+  subject?: string
+  message: string
+  status: "yangi" | "oqildi" | "javob_berildi" | "arxiv"
+  createdAt: string
+  updatedAt?: string
+}
+
