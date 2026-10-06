@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     const resolvedMessage = (message || info || "").toString().trim()
 
     // Store in internal database
-    const savedApp = addApplication({
+    const savedApp = await addApplication({
       studentName: resolvedStudentName,
       parentName: resolvedParentName,
       phone: resolvedPhone,

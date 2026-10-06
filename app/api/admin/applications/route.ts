@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
       { status: 401, headers: NO_CACHE_HEADERS },
     )
   }
-  const applications = getApplications()
+  const applications = await getApplications()
   return NextResponse.json(
     { success: true, count: applications.length, data: applications },
     { headers: NO_CACHE_HEADERS },
@@ -44,7 +44,7 @@ export async function PUT(request: NextRequest) {
         { status: 400, headers: NO_CACHE_HEADERS },
       )
     }
-    const updated = updateApplicationStatus(id, status, notes)
+    const updated = await updateApplicationStatus(id, status, notes)
     if (!updated) {
       return NextResponse.json(
         { success: false, message: "Ariza topilmadi" },
@@ -78,7 +78,7 @@ export async function DELETE(request: NextRequest) {
       { status: 400, headers: NO_CACHE_HEADERS },
     )
   }
-  const deleted = deleteApplication(id)
+  const deleted = await deleteApplication(id)
   return NextResponse.json(
     { success: deleted },
     { headers: NO_CACHE_HEADERS },

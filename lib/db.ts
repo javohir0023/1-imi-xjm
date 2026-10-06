@@ -2,6 +2,7 @@ import fs from "fs"
 import path from "path"
 import { NewsItem, ApplicationItem, AchievementItem, TeacherItem, GalleryItem, ContactMessageItem } from "./types"
 import { INITIAL_NEWS, INITIAL_ACHIEVEMENTS, INITIAL_TEACHERS, INITIAL_GALLERY } from "./data/initial-data"
+import { supabase, isSupabaseConfigured } from "./supabase"
 
 const DB_PATH = path.join(process.cwd(), "lib", "data", "db.json")
 
@@ -116,94 +117,310 @@ export function deleteNewsItem(id: string): boolean {
 }
 
 // Applications functions
-export function getApplications(): ApplicationItem[] {
+export async function getApplications(): Promise<ApplicationItem[]> {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("applications")
+        .select("*")
+        .order("created_at", { ascending: false })
+
+      if (!error && Array.isArray(data)) {
+        return data.map((row: any) => ({
+          id: row.id,
+          studentName: row.student_name ?? row.studentName ?? "",
+          parentName: row.parent_name ?? row.parentName ?? "",
+          phone: row.phone ?? "",
+          grade: row.grade ?? "5-sinf",
+          region: row.region ?? "Urganch shahar",
+          message: row.message ?? "",
+          status: row.status ?? "yangi",
+          createdAt: row.created_at ?? row.createdAt ?? new Date().toISOString(),
+          updatedAt: row.updated_at ?? row.updatedAt,
+          notes: row.notes ?? "",
+        }))
+      }
+      if (error) {
+        console.warn("[Supabase] Failed to fetch applications, falling back to local:", error.message)
+      }
+    } catch (err) {
+      console.warn("[Supabase] Applications fetch exception, falling back:", err)
+    }
+  }
+
   const db = getDb()
   return db.applications || []
 }
 
-export function addApplication(app: Omit<ApplicationItem, "id" | "createdAt" | "status">): ApplicationItem {
-  const db = getDb()
+export async function addApplication(
+  app: Omit<ApplicationItem, "id" | "createdAt" | "status">
+): Promise<ApplicationItem> {
   const newItem: ApplicationItem = {
     ...app,
     id: "app-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7),
     status: "yangi",
     createdAt: new Date().toISOString(),
   }
-  db.applications.unshift(newItem)
-  saveDb(db)
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { error } = await supabase.from("applications").insert({
+        id: newItem.id,
+        student_name: newItem.studentName,
+        parent_name: newItem.parentName,
+        phone: newItem.phone,
+        grade: newItem.grade,
+        region: newItem.region,
+        message: newItem.message || "",
+        status: newItem.status,
+        created_at: newItem.createdAt,
+        notes: newItem.notes || "",
+      })
+      if (error) {
+        console.error("[Supabase] Error saving application to Supabase:", error.message)
+      } else {
+        console.log(`[Supabase] Application successfully saved: ID=${newItem.id}`)
+      }
+    } catch (err) {
+      console.error("[Supabase] Insert application exception:", err)
+    }
+  }
+
+  // Also save to local db for offline development if possible
+  try {
+    const db = getDb()
+    if (!db.applications) db.applications = []
+    db.applications.unshift(newItem)
+    saveDb(db)
+  } catch (err) {
+    // In serverless read-only environment, ignore local fs write errors
+  }
+
   return newItem
 }
 
-export function updateApplicationStatus(
+export async function updateApplicationStatus(
   id: string,
   status: ApplicationItem["status"],
   notes?: string,
-): ApplicationItem | null {
+): Promise<ApplicationItem | null> {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const updatePayload: Record<string, any> = {
+        status,
+        updated_at: new Date().toISOString(),
+      }
+      if (notes !== undefined) updatePayload.notes = notes
+
+      const { data, error } = await supabase
+        .from("applications")
+        .update(updatePayload)
+        .eq("id", id)
+        .select()
+        .single()
+
+      if (!error && data) {
+        return {
+          id: data.id,
+          studentName: data.student_name ?? data.studentName ?? "",
+          parentName: data.parent_name ?? data.parentName ?? "",
+          phone: data.phone ?? "",
+          grade: data.grade ?? "5-sinf",
+          region: data.region ?? "Urganch shahar",
+          message: data.message ?? "",
+          status: data.status ?? "yangi",
+          createdAt: data.created_at ?? data.createdAt,
+          updatedAt: data.updated_at ?? data.updatedAt,
+          notes: data.notes ?? "",
+        }
+      }
+      if (error) {
+        console.warn("[Supabase] Failed to update application:", error.message)
+      }
+    } catch (err) {
+      console.warn("[Supabase] Update application error:", err)
+    }
+  }
+
   const db = getDb()
   const app = db.applications.find((a) => a.id === id)
   if (!app) return null
   app.status = status
   app.updatedAt = new Date().toISOString()
   if (notes !== undefined) app.notes = notes
-  saveDb(db)
+  try {
+    saveDb(db)
+  } catch {
+    // Ignore read-only fs error
+  }
   return app
 }
 
-export function deleteApplication(id: string): boolean {
+export async function deleteApplication(id: string): Promise<boolean> {
+  let supabaseDeleted = false
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { error } = await supabase.from("applications").delete().eq("id", id)
+      if (!error) supabaseDeleted = true
+      else console.warn("[Supabase] Delete application error:", error.message)
+    } catch (err) {
+      console.warn("[Supabase] Delete application exception:", err)
+    }
+  }
+
   const db = getDb()
   const initialLen = db.applications.length
   db.applications = db.applications.filter((a) => a.id !== id)
   if (db.applications.length !== initialLen) {
-    saveDb(db)
+    try {
+      saveDb(db)
+    } catch {}
     return true
   }
-  return false
+  return supabaseDeleted
 }
 
 // Contact Messages functions (Murojaatlar)
-export function getContactMessages(): ContactMessageItem[] {
+export async function getContactMessages(): Promise<ContactMessageItem[]> {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("contact_messages")
+        .select("*")
+        .order("created_at", { ascending: false })
+
+      if (!error && Array.isArray(data)) {
+        return data.map((row: any) => ({
+          id: row.id,
+          name: row.name,
+          email: row.email || "",
+          phone: row.phone || "",
+          subject: row.subject || "",
+          message: row.message || "",
+          status: row.status || "yangi",
+          createdAt: row.created_at || row.createdAt || new Date().toISOString(),
+          updatedAt: row.updated_at || row.updatedAt,
+        }))
+      }
+      if (error) {
+        console.warn("[Supabase] Failed to fetch contact messages:", error.message)
+      }
+    } catch (err) {
+      console.warn("[Supabase] Contact messages fetch exception:", err)
+    }
+  }
+
   const db = getDb()
   return db.contactMessages || []
 }
 
-export function addContactMessage(msg: Omit<ContactMessageItem, "id" | "createdAt" | "status">): ContactMessageItem {
-  const db = getDb()
-  if (!db.contactMessages) db.contactMessages = []
+export async function addContactMessage(
+  msg: Omit<ContactMessageItem, "id" | "createdAt" | "status">
+): Promise<ContactMessageItem> {
   const newItem: ContactMessageItem = {
     ...msg,
     id: "msg-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7),
     status: "yangi",
     createdAt: new Date().toISOString(),
   }
-  db.contactMessages.unshift(newItem)
-  saveDb(db)
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { error } = await supabase.from("contact_messages").insert({
+        id: newItem.id,
+        name: newItem.name,
+        email: newItem.email || "",
+        phone: newItem.phone || "",
+        subject: newItem.subject || "",
+        message: newItem.message,
+        status: newItem.status,
+        created_at: newItem.createdAt,
+      })
+      if (error) {
+        console.error("[Supabase] Error saving contact message:", error.message)
+      }
+    } catch (err) {
+      console.error("[Supabase] Insert contact message exception:", err)
+    }
+  }
+
+  try {
+    const db = getDb()
+    if (!db.contactMessages) db.contactMessages = []
+    db.contactMessages.unshift(newItem)
+    saveDb(db)
+  } catch (err) {
+    // Ignore in serverless
+  }
+
   return newItem
 }
 
-export function updateContactMessageStatus(
+export async function updateContactMessageStatus(
   id: string,
   status: ContactMessageItem["status"],
-): ContactMessageItem | null {
+): Promise<ContactMessageItem | null> {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("contact_messages")
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq("id", id)
+        .select()
+        .single()
+
+      if (!error && data) {
+        return {
+          id: data.id,
+          name: data.name,
+          email: data.email || "",
+          phone: data.phone || "",
+          subject: data.subject || "",
+          message: data.message,
+          status: data.status,
+          createdAt: data.created_at,
+          updatedAt: data.updated_at,
+        }
+      }
+    } catch (err) {
+      console.warn("[Supabase] Error updating contact message:", err)
+    }
+  }
+
   const db = getDb()
   if (!db.contactMessages) return null
   const item = db.contactMessages.find((m) => m.id === id)
   if (!item) return null
   item.status = status
   item.updatedAt = new Date().toISOString()
-  saveDb(db)
+  try {
+    saveDb(db)
+  } catch {}
   return item
 }
 
-export function deleteContactMessage(id: string): boolean {
+export async function deleteContactMessage(id: string): Promise<boolean> {
+  let supabaseDeleted = false
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { error } = await supabase.from("contact_messages").delete().eq("id", id)
+      if (!error) supabaseDeleted = true
+    } catch (err) {
+      console.warn("[Supabase] Error deleting contact message:", err)
+    }
+  }
+
   const db = getDb()
-  if (!db.contactMessages) return false
+  if (!db.contactMessages) return supabaseDeleted
   const initialLen = db.contactMessages.length
   db.contactMessages = db.contactMessages.filter((m) => m.id !== id)
   if (db.contactMessages.length !== initialLen) {
-    saveDb(db)
+    try {
+      saveDb(db)
+    } catch {}
     return true
   }
-  return false
+  return supabaseDeleted
 }
 
 // Teachers functions

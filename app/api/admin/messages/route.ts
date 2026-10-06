@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
       { status: 401, headers: NO_CACHE_HEADERS },
     )
   }
-  const messages = getContactMessages()
+  const messages = await getContactMessages()
   return NextResponse.json(
     { success: true, count: messages.length, data: messages },
     { headers: NO_CACHE_HEADERS },
@@ -44,7 +44,7 @@ export async function PUT(request: NextRequest) {
         { status: 400, headers: NO_CACHE_HEADERS },
       )
     }
-    const updated = updateContactMessageStatus(id, status)
+    const updated = await updateContactMessageStatus(id, status)
     if (!updated) {
       return NextResponse.json(
         { success: false, message: "Xabar topilmadi" },
@@ -78,7 +78,7 @@ export async function DELETE(request: NextRequest) {
       { status: 400, headers: NO_CACHE_HEADERS },
     )
   }
-  const deleted = deleteContactMessage(id)
+  const deleted = await deleteContactMessage(id)
   return NextResponse.json(
     { success: deleted },
     { headers: NO_CACHE_HEADERS },

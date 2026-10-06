@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Save contact message / murojaat to internal database
-    const savedMsg = addContactMessage({
+    const savedMsg = await addContactMessage({
       name: String(name).trim(),
       email: email ? String(email).trim() : "",
       phone: phone ? String(phone).trim() : undefined,
