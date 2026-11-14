@@ -11,7 +11,7 @@ O'zbekiston Respublikasi Ixtisoslashtirilgan ta'lim muassasalari agentligi tizim
 - **Ma'lumotlar bazasi:** Next.js Route Handlers, JSON DB (`lib/data/db.json`, `certificates.json`, `teachers.json`)
 - **Sertifikatlar arxivi:** 674 ta tasdiqlangan milliy va xalqaro sertifikatlar (0 ta dublikat, tozalangan)
 - **Telegram integratsiyasi:** Server-side Public Preview (`https://t.me/s/Urganch_IMI`) avtomatik yangiliklar sinxronizatsiyasi
-- **Video taqdimot:** Rasmiy YouTube video integratsiyasi (1080p Full HD)
+- **Video taqdimot:** Rasmiy video taqdimot (`maktab video.mp4` va YouTube Full HD integratsiyasi)
 - **O'qituvchilar:** 79 nafar tasdiqlangan pedagoglar tarkibi (Quryazova Ruxsora - MMIBDO')
 - **Tillar:** O'zbekcha (UZ), Ruscha (RU), Inglizcha (EN)
 

@@ -14,12 +14,12 @@ export default function IntroVideo() {
     {
       id: "local-intro",
       type: "local",
-      src: "/maktab intro.MOV",
-      titleUz: "Urganch 1-IMI rasmiy intro videoroligi",
-      titleRu: "Официальный интро-видеоролик Урганч 1-ИМИ",
-      titleEn: "Urganch 1-IMI Official Intro Video",
+      src: "/maktab video.mp4",
+      titleUz: "Urganch 1-IMI rasmiy videoroligi",
+      titleRu: "Официальный видеоролик Урганч 1-ИМИ",
+      titleEn: "Urganch 1-IMI Official Video",
       descUz: "Urganch shahar 1-son IMI o'quv muhiti, innovatsion sharoitlari va iqtidorli yoshlar hayoti.",
-      badge: "Asosiy Intro Video",
+      badge: "Maktab Videosi",
     },
     {
       id: "BcGrHz6sbxY",
@@ -161,8 +161,7 @@ export default function IntroVideo() {
                   playsInline
                   className="w-full h-full object-cover bg-black"
                 >
-                  <source src="/maktab intro.MOV" type="video/mp4" />
-                  <source src="/maktab intro.MOV" type="video/quicktime" />
+                  <source src="/maktab video.mp4" type="video/mp4" />
                   Brauzeringiz HTML5 videoni qo'llab-quvvatlamaydi.
                 </video>
               ) : (
@@ -251,12 +250,12 @@ export default function IntroVideo() {
             <div className="flex flex-wrap items-center gap-3">
               {activeVideo.type === "local" ? (
                 <a
-                  href="/maktab intro.MOV"
-                  download="Urganch_1_IMI_Intro.mov"
+                  href="/maktab video.mp4"
+                  download="Urganch_1_IMI_Maktab_Video.mp4"
                   className="px-4 py-2 rounded-lg bg-[#C6A15B] hover:bg-[#d8b030] text-[#10243A] font-bold transition-colors inline-flex items-center gap-1.5 shadow-xs"
                 >
                   <Film size={14} />
-                  <span>Videoni yuklab olish (HD)</span>
+                  <span>Videoni yuklab olish (MP4)</span>
                 </a>
               ) : (
                 <a
