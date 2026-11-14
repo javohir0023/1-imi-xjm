@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { FileText, Calendar, CheckCircle, Users, Send, ShieldAlert, Check, Phone, User, MapPin } from "lucide-react"
+import { FileText, Calendar, CheckCircle, Users, Send, ShieldAlert, Check, Phone, User, MapPin, ExternalLink, ShieldCheck } from "lucide-react"
 import { useLanguage } from "@/lib/language-context"
 
 export default function Admissions() {
@@ -26,17 +26,21 @@ export default function Admissions() {
       badge: "Qabul — 2026/2027",
       title: "Maktabga Qabul Jarayoni",
       subtitle:
-        "5-sinf (matematika va ingliz tili) hamda 7-sinf (biologiya va kimyo) bosqichlarida davlat granti asosida o'quvchilar qabul qilinadi.",
-      step1Title: "Hujjat topshirish",
-      step1Desc: "ariza.piima.uz portali yoki maktab rasmiy tizimi orqali ro'yxatdan o'tish.",
+        "5-sinf (matematika va ingliz tili) hamda 7-sinf (biologiya va kimyo) yo'nalishlarida 100% davlat granti asosida o'quvchilar qabul qilinadi.",
+      officialBannerTitle: "Rasmiy Davlat Qabul Portali",
+      officialBannerDesc:
+        "Urganch 1-IMI ga barcha rasmiy arizalar O'zbekiston Respublikasi Ixtisoslashtirilgan ta'lim muassasalari agentligining ariza.piima.uz portali orqali qabul qilinadi. Imtihonlar Bilim va malakalarni baholash agentligi tomonidan o'tkaziladi.",
+      officialBannerBtn: "ariza.piima.uz portaliga o'tish",
+      step1Title: "Rasmiy ro'yxatdan o'tish",
+      step1Desc: "ariza.piima.uz portalida o'quvchi ma'lumotlari va hujjatlarini onlayn taqdim etish.",
       step2Title: "Davlat Imtihonlari",
-      step2Desc: "Bilim va malakalarni baholash agentligi nazoratida o'tkaziladigan sinovlar.",
+      step2Desc: "Bilim va malakalarni baholash agentligi (DTM) nazoratida o'tkaziladigan test sinovlari.",
       step3Title: "Natijalar e'lon qilinishi",
-      step3Desc: "Reyting natijalari asosida eng yuqori ball to'plagan o'quvchilar tavsiya etiladi.",
-      step4Title: "Bepul Ta'lim va Yotoqxona",
-      step4Desc: "Davlat granti asosida to'liq moliyalashtirilgan o'qish, bepul ovqat va yotoqxona.",
-      formTitle: "Onlayn Ariza Topshirish",
-      formSubtitle: "Qabul bo'yicha dastlabki ma'lumotlarni qoldiring, mas'ul xodimlarimiz tez orada bog'lanadi.",
+      step3Desc: "Reyting natijalari asosida eng yuqori ball to'plagan iqtidorli o'quvchilar saralanadi.",
+      step4Title: "100% Davlat Granti",
+      step4Desc: "Davlat granti hisobidan to'liq bepul o'qish, bepul yotoqxona va 2 mahal issiq ovqat.",
+      formTitle: "Maktab Qabul Komissiyasi Bilan Bog'lanish",
+      formSubtitle: "Qabul talablari va jarayoni bo'yicha savollaringiz bo'lsa, konsultatsiya uchun ma'lumot qoldiring.",
       studentNameLabel: "O'quvchining F.I.Sh.",
       studentNamePlaceholder: "Masalan: Karimov Jasurbek Alisher o'g'li",
       parentNameLabel: "Ota-onaning F.I.Sh.",
@@ -58,16 +62,20 @@ export default function Admissions() {
       title: "Процесс приема в школу",
       subtitle:
         "Прием на основе государственных грантов в 5-й класс (математика и английский) и 7-й класс (биология и химия).",
+      officialBannerTitle: "Официальный Государственный Портал Приёма",
+      officialBannerDesc:
+        "Все официальные заявления на поступление в Урганч 1-ИМИ принимаются через государственный портал Агентства специализированных образовательных учреждений ariza.piima.uz.",
+      officialBannerBtn: "Перейти на портал ariza.piima.uz",
       step1Title: "Подача документов",
-      step1Desc: "Регистрация через портал ariza.piima.uz или школьную систему.",
+      step1Desc: "Регистрация через портал ariza.piima.uz с загрузкой необходимых документов.",
       step2Title: "Вступительные экзамены",
-      step2Desc: "Экзамены под контролем Агентства по оценке знаний и навыков.",
+      step2Desc: "Экзамены под контролем Агентства по оценке знаний и навыков (DTM).",
       step3Title: "Объявление результатов",
       step3Desc: "Зачисление лучших кандидатов на основе рейтинговых баллов.",
-      step4Title: "Грант и общежитие",
+      step4Title: "100% Государственный Грант",
       step4Desc: "Бесплатное обучение за счет государственного гранта, питание и проживание.",
-      formTitle: "Онлайн-заявка на приём",
-      formSubtitle: "Заполните форму для первичной регистрации, наши специалисты свяжутся с вами.",
+      formTitle: "Консультация с Приёмной Комиссией",
+      formSubtitle: "Заполните форму для получения консультации по поступлению, наши специалисты свяжутся с вами.",
       studentNameLabel: "Ф.И.О. ученика",
       studentNamePlaceholder: "Например: Каримов Жасурбек Алишерович",
       parentNameLabel: "Ф.И.О. родителя",
@@ -77,11 +85,11 @@ export default function Admissions() {
       regionLabel: "Регион проживания",
       messageLabel: "Дополнительные сведения / вопросы",
       messagePlaceholder: "Интересы, предыдущие олимпиады или вопросы...",
-      submitBtn: "Отправить заявку",
+      submitBtn: "Отправить запрос",
       submittingBtn: "Отправка...",
-      successTitle: "Заявка успешно принята!",
+      successTitle: "Запрос успешно принят!",
       successDesc: "Данные переданы приемной комиссии школы. Мы свяжемся с вами в ближайшее время.",
-      newAppBtn: "Подать еще заявку",
+      newAppBtn: "Отправить новый запрос",
       officialPortalNotice: "Официальный портал Агентства:",
     },
     en: {
@@ -89,16 +97,20 @@ export default function Admissions() {
       title: "Admissions Process",
       subtitle:
         "State-funded merit admissions for Grade 5 (Math & English) and Grade 7 (Biology & Chemistry).",
+      officialBannerTitle: "Official National Admissions Portal",
+      officialBannerDesc:
+        "All official applications for Urganch 1-IMI are processed centrally through the Agency for Specialized Educational Institutions portal at ariza.piima.uz.",
+      officialBannerBtn: "Open ariza.piima.uz Portal",
       step1Title: "Online Submission",
-      step1Desc: "Registration via ariza.piima.uz or institutional portal.",
+      step1Desc: "Registration and document submission via ariza.piima.uz.",
       step2Title: "Competitive Exams",
       step2Desc: "Standardized examinations administered by the National Assessment Agency.",
       step3Title: "Merit Rankings",
       step3Desc: "Offers extended to top performers based on official exam scores.",
-      step4Title: "Full State Scholarship",
-      step4Desc: "100% state-funded tuition, meal plans, and residential facilities.",
-      formTitle: "Online Application Form",
-      formSubtitle: "Submit your preliminary application details for admissions office follow-up.",
+      step4Title: "100% State Scholarship",
+      step4Desc: "Fully state-funded tuition, accommodation, and dining.",
+      formTitle: "Admissions Office Consultation",
+      formSubtitle: "Leave your contact details to receive preliminary counseling from our admissions staff.",
       studentNameLabel: "Student Full Name",
       studentNamePlaceholder: "e.g. Jasurbek Karimov",
       parentNameLabel: "Parent/Guardian Full Name",
@@ -108,11 +120,11 @@ export default function Admissions() {
       regionLabel: "Region/District",
       messageLabel: "Additional Notes or Inquiries",
       messagePlaceholder: "Academic interests, awards or questions...",
-      submitBtn: "Submit Application",
+      submitBtn: "Submit Inquiry",
       submittingBtn: "Submitting...",
-      successTitle: "Application Successfully Received!",
+      successTitle: "Inquiry Successfully Received!",
       successDesc: "Your details have been logged and routed to our admissions coordinators.",
-      newAppBtn: "Submit Another Application",
+      newAppBtn: "Submit Another Inquiry",
       officialPortalNotice: "Official Agency Portal:",
     },
   }[language]
@@ -215,6 +227,31 @@ export default function Admissions() {
               </div>
             )
           })}
+        </div>
+ 
+        {/* Official Agency Admissions Portal Primary Banner */}
+        <div className="max-w-3xl mx-auto mb-10 p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-[#10243A] to-[#183650] text-white border border-[#C6A15B]/30 shadow-lg text-center space-y-4">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[#C6A15B] text-xs font-bold">
+            <ShieldCheck size={14} />
+            <span>{t.officialBannerTitle}</span>
+          </div>
+          <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+            Rasmiy Hujjat Topshirish
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
+            {t.officialBannerDesc}
+          </p>
+          <div className="pt-2">
+            <a
+              href="https://ariza.piima.uz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#C6A15B] hover:bg-[#d8b030] text-[#10243A] text-xs sm:text-sm font-extrabold rounded-xl transition-all shadow-md transform hover:-translate-y-0.5"
+            >
+              <span>{t.officialBannerBtn}</span>
+              <ExternalLink size={16} />
+            </a>
+          </div>
         </div>
 
         {/* Online Application Form Card */}

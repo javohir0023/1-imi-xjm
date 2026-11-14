@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Inter, Manrope } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
@@ -7,6 +7,12 @@ const inter = Inter({
   subsets: ["latin", "cyrillic"],
   display: "swap",
   variable: "--font-inter",
+})
+
+const manrope = Manrope({
+  subsets: ["latin", "cyrillic"],
+  display: "swap",
+  variable: "--font-manrope",
 })
 
 export const metadata: Metadata = {
@@ -115,14 +121,14 @@ export default function RootLayout({
   }
 
   return (
-    <html lang="uz" className={inter.variable}>
+    <html lang="uz" className={`${inter.variable} ${manrope.variable}`}>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="font-sans antialiased bg-[#F7F9FC] dark:bg-[#071324] text-[#111827] dark:text-slate-100">
+      <body className="font-sans antialiased bg-[#F5F7FA] dark:bg-[#0B1726] text-[#172638] dark:text-slate-100 selection:bg-[#C6A15B]/30 selection:text-[#10243A]">
         {children}
         <Analytics />
       </body>

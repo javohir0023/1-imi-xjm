@@ -14,20 +14,23 @@ export default function Footer() {
       schoolName: "Urganch shahar 1-son ixtisoslashtirilgan maktab-internati",
       agencyAffiliation: "O'zbekiston Respublikasi Ixtisoslashtirilgan ta'lim muassasalari agentligi tizimida",
       description:
-        "Kelajakni bugundan quradigan avlod tarbiyasi. Aniq va tabiiy fanlar chuqurlashtirilgan davlat ta'lim maskani.",
+        "Kelajakni bugundan quradigan avlod tarbiyasi. Aniq va tabiiy fanlar chuqurlashtirilgan nufuzli davlat ta'lim maskani.",
       navTitle: "Asosiy Bo'limlar",
       home: "Bosh sahifa",
       about: "Maktab haqida",
       education: "Ta'lim yo'nalishlari",
-      teachers: "O'qituvchilar",
-      achievements: "Yutuqlar",
+      students: "O'quvchilar hayoti",
+      teachers: "Pedagogik jamoa",
+      achievements: "Yutuqlar & Sertifikatlar",
       news: "Yangiliklar",
       gallery: "Galereya",
+      contact: "Bog'lanish",
       resourcesTitle: "Rasmiy Havolalar",
-      schoolProfile: "Maktab profili (Dossier)",
+      schoolProfile: "Maktab profili (PDF)",
       schoolMode: "🏫 Maktab rejimi",
-      admissions: "Qabulga topshirish",
+      admissions: "Qabul (ariza.piima.uz)",
       agencyPortal: "Agentlik portali (piima.uz)",
+      telegramChannel: "Rasmiy Telegram kanali",
       adminPanel: "Admin panel",
       contactTitle: "Bog'lanish",
       address: "220100, Xorazm viloyati, Urganch shahar, Sheroziy ko'chasi, 2-uy",
@@ -45,15 +48,18 @@ export default function Footer() {
       home: "Главная",
       about: "О школе",
       education: "Образование",
+      students: "Ученическая жизнь",
       teachers: "Преподаватели",
-      achievements: "Достижения",
+      achievements: "Достижения и сертификаты",
       news: "Новости",
       gallery: "Галерея",
+      contact: "Контакты",
       resourcesTitle: "Ресурсы и порталы",
-      schoolProfile: "Профиль школы (Dossier)",
+      schoolProfile: "Профиль школы (PDF)",
       schoolMode: "🏫 Режим школы",
-      admissions: "Приёмная комиссия",
+      admissions: "Приём (ariza.piima.uz)",
       agencyPortal: "Портал Агентства (piima.uz)",
+      telegramChannel: "Официальный Telegram-канал",
       adminPanel: "Панель администратора",
       contactTitle: "Контакты",
       address: "220100, Хорезмская область, г. Урганч, ул. Шерозий, д. 2",
@@ -71,15 +77,18 @@ export default function Footer() {
       home: "Home",
       about: "About School",
       education: "Academics",
+      students: "Student Life",
       teachers: "Faculty Directory",
-      achievements: "Achievements",
+      achievements: "Achievements & Certificates",
       news: "News & Press",
       gallery: "Gallery",
+      contact: "Contact",
       resourcesTitle: "Resources & Portals",
-      schoolProfile: "School Profile (Dossier)",
+      schoolProfile: "School Profile (PDF)",
       schoolMode: "🏫 School Mode",
-      admissions: "Admissions",
+      admissions: "Admissions (ariza.piima.uz)",
       agencyPortal: "Agency Portal (piima.uz)",
+      telegramChannel: "Official Telegram Channel",
       adminPanel: "Admin Panel",
       contactTitle: "Contact Enquiries",
       address: "2 Sheroziy Street, Urgench 220100, Khorezm Region, Uzbekistan",
@@ -91,14 +100,14 @@ export default function Footer() {
   }[language]
 
   return (
-    <footer className="bg-[#0B1F3A] text-white border-t border-white/10 pt-16 pb-8">
+    <footer className="bg-[#10243A] text-white border-t border-white/10 pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-white/15">
           {/* Identity Column */}
           <div className="lg:col-span-4 space-y-4">
             <Link href="/" className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#C9A227] bg-white flex-shrink-0">
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#C6A15B] bg-white flex-shrink-0">
                 <Image
                   src="/images/logo.jpg"
                   alt="Urganch 1-IMI Logo"
@@ -111,7 +120,7 @@ export default function Footer() {
                 <h3 className="font-extrabold text-base text-white tracking-tight leading-tight">
                   URGANCH 1-IMI
                 </h3>
-                <p className="text-[11px] text-[#C9A227] font-medium leading-tight mt-0.5">
+                <p className="text-[11px] text-[#C6A15B] font-medium leading-tight mt-0.5">
                   {t.schoolName}
                 </p>
               </div>
@@ -122,7 +131,7 @@ export default function Footer() {
             </p>
 
             <div className="flex items-center gap-1.5 text-xs text-slate-400">
-              <ShieldCheck size={14} className="text-[#C9A227]" />
+              <ShieldCheck size={14} className="text-[#C6A15B]" />
               <span className="text-[11px]">{t.agencyAffiliation}</span>
             </div>
 
@@ -133,7 +142,8 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Telegram"
-                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#C9A227] hover:text-[#0B1F3A] flex items-center justify-center transition-colors text-white"
+                className="w-8 h-8 rounded-lg bg-[#0088cc] hover:bg-[#C6A15B] hover:text-[#10243A] flex items-center justify-center transition-colors text-white"
+                title="Telegram @Urganch_IMI"
               >
                 <Send size={15} />
               </a>
@@ -142,7 +152,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#C9A227] hover:text-[#0B1F3A] flex items-center justify-center transition-colors text-white"
+                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#C6A15B] hover:text-[#10243A] flex items-center justify-center transition-colors text-white"
               >
                 <Instagram size={15} />
               </a>
@@ -151,7 +161,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="YouTube"
-                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#C9A227] hover:text-[#0B1F3A] flex items-center justify-center transition-colors text-white"
+                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#C6A15B] hover:text-[#10243A] flex items-center justify-center transition-colors text-white"
               >
                 <Youtube size={15} />
               </a>
@@ -160,7 +170,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#C9A227] hover:text-[#0B1F3A] flex items-center justify-center transition-colors text-white"
+                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#C6A15B] hover:text-[#10243A] flex items-center justify-center transition-colors text-white"
               >
                 <Facebook size={15} />
               </a>
@@ -169,7 +179,7 @@ export default function Footer() {
 
           {/* Navigation Links */}
           <div className="lg:col-span-3 space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#C9A227]">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#C6A15B]">
               {t.navTitle}
             </h4>
             <ul className="space-y-2 text-xs text-slate-300">
@@ -179,13 +189,18 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/#about" className="hover:text-white transition-colors">
+                <Link href="/about" className="hover:text-white transition-colors">
                   {t.about}
                 </Link>
               </li>
               <li>
-                <Link href="/#education" className="hover:text-white transition-colors">
+                <Link href="/education" className="hover:text-white transition-colors">
                   {t.education}
+                </Link>
+              </li>
+              <li>
+                <Link href="/students" className="hover:text-white transition-colors">
+                  {t.students}
                 </Link>
               </li>
               <li>
@@ -194,7 +209,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/#achievements" className="hover:text-white transition-colors">
+                <Link href="/achievements" className="hover:text-white transition-colors">
                   {t.achievements}
                 </Link>
               </li>
@@ -204,8 +219,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/#gallery" className="hover:text-white transition-colors">
-                  {t.gallery}
+                <Link href="/contact" className="hover:text-white transition-colors">
+                  {t.contact}
                 </Link>
               </li>
             </ul>
@@ -213,12 +228,12 @@ export default function Footer() {
 
           {/* Institutional Resources & School Mode */}
           <div className="lg:col-span-2 space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#C9A227]">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#C6A15B]">
               {t.resourcesTitle}
             </h4>
             <ul className="space-y-2 text-xs text-slate-300">
               <li>
-                <Link href="/school-profile" className="text-[#C9A227] hover:underline font-semibold">
+                <Link href="/school-profile" className="text-[#C6A15B] hover:underline font-semibold">
                   {t.schoolProfile}
                 </Link>
               </li>
@@ -227,7 +242,7 @@ export default function Footer() {
                   href="https://dish-load-05854082.figma.site/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 font-bold text-white hover:text-[#C9A227] transition-colors"
+                  className="inline-flex items-center gap-1 font-bold text-white hover:text-[#C6A15B] transition-colors"
                 >
                   <span>{t.schoolMode}</span>
                   <ExternalLink size={10} />
@@ -237,6 +252,17 @@ export default function Footer() {
                 <Link href="/admissions" className="hover:text-white transition-colors">
                   {t.admissions}
                 </Link>
+              </li>
+              <li>
+                <a
+                  href="https://t.me/Urganch_IMI"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 hover:text-[#C6A15B] transition-colors"
+                >
+                  <Send size={10} />
+                  <span>{t.telegramChannel}</span>
+                </a>
               </li>
               <li>
                 <a
@@ -262,22 +288,22 @@ export default function Footer() {
 
           {/* Contact Details */}
           <div className="lg:col-span-3 space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#C9A227]">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#C6A15B]">
               {t.contactTitle}
             </h4>
             <div className="space-y-2.5 text-xs text-slate-300">
               <div className="flex items-start gap-2">
-                <MapPin size={14} className="text-[#C9A227] mt-0.5 flex-shrink-0" />
+                <MapPin size={14} className="text-[#C6A15B] mt-0.5 flex-shrink-0" />
                 <span className="leading-relaxed">{t.address}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Phone size={14} className="text-[#C9A227] flex-shrink-0" />
+                <Phone size={14} className="text-[#C6A15B] flex-shrink-0" />
                 <a href="tel:+998622232031" className="hover:text-white transition-colors font-medium">
                   {t.phone}
                 </a>
               </div>
               <div className="flex items-center gap-2">
-                <Mail size={14} className="text-[#C9A227] flex-shrink-0" />
+                <Mail size={14} className="text-[#C6A15B] flex-shrink-0" />
                 <a href="mailto:gmail@urganchimi.uz" className="hover:text-white transition-colors">
                   {t.email}
                 </a>
@@ -290,11 +316,10 @@ export default function Footer() {
         <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-400 border-t border-white/10 mt-6">
           <p>{t.copyright}</p>
 
-          {/* Sayt Asoschisi & Credits */}
           <div className="flex flex-wrap items-center justify-center gap-3 text-[11px]">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-[#C9A227]/40 text-slate-200">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-[#C6A15B]/40 text-slate-200">
               <span className="text-slate-300">{t.founderLabel}:</span>
-              <span className="text-[#C9A227] font-extrabold tracking-wide">Javoxir Xajiboyev</span>
+              <span className="text-[#C6A15B] font-extrabold tracking-wide">Javoxir Xajiboyev</span>
             </div>
             <span className="text-slate-600 hidden sm:inline">·</span>
             <span>Urganch shahar 1-son IMI rasmiy veb-sayti</span>
@@ -303,7 +328,7 @@ export default function Footer() {
               href="https://dish-load-05854082.figma.site/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#C9A227] hover:underline font-semibold"
+              className="text-[#C6A15B] hover:underline font-semibold"
             >
               Maktab rejimi
             </a>

@@ -53,18 +53,38 @@ export interface AchievementItem {
 export interface TeacherItem {
   id: number
   nameUz: string
-  nameRu: string
-  nameEn: string
+  nameRu?: string
+  nameEn?: string
   positionUz: string
-  positionRu: string
-  positionEn: string
+  positionRu?: string
+  positionEn?: string
   subjectUz?: string
   qualification?: string
   degree?: string
-  image?: string
-  category: "administration" | "science" | "language" | "other"
+  image?: string | null
+  section?: string
+  category: "administration" | "science" | "language" | "technical" | "adjunct" | "other"
   isQualified?: boolean
   bio?: LocalizedString
+}
+
+export interface CertificateItem {
+  id: string
+  rowNumber: number
+  studentName: string
+  category: string
+  certType: string
+  subject: string
+  level: string
+  score: string
+  teacher: string
+  school: string
+  date: string
+  year: string
+  isDuplicate?: boolean
+  isIncomplete?: boolean
+  reviewNotes?: string | null
+  source: string
 }
 
 export interface GalleryItem {

@@ -1,61 +1,95 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useMemo } from "react"
 import Image from "next/image"
 import { LanguageProvider, useLanguage } from "@/lib/language-context"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
-import { Users, GraduationCap, Award, Search, BookOpen, ShieldCheck } from "lucide-react"
-import { getInitialTeachers } from "@/lib/data/initial-data"
+import TelegramCTA from "@/components/telegram-cta"
+import { Users, GraduationCap, Award, Search, BookOpen, ShieldCheck, Mail, Phone, ChevronRight } from "lucide-react"
+import { TeacherItem } from "@/lib/types"
 
 function TeachersPageContent() {
   const { language } = useLanguage()
+  const [teachers, setTeachers] = useState<TeacherItem[]>([])
+  const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState("")
 
   const t = {
     uz: {
-      badge: "Pedagoglar Tarkibi",
-      title: "Urganch 1-IMI Pedagogik Jamoasi",
+      badge: "Pedagogik Tarkib",
+      title: "Urganch 1-IMI Ustozlar va Xodimlar Tarkibi",
       subtitle:
-        "44 nafar tajribali va malakali o'qituvchilar: 2 nafar fan doktori (PhD), 22 nafar magistr va 95.4% oliy davlat toifasidagi pedagoglar.",
+        "O'zbekiston Respublikasi Ixtisoslashtirilgan ta'lim muassasalari agentligi tasarrufidagi maktabimizning barcha 79 nafar oliy toifali pedagog va xodimlari.",
       searchPlaceholder: "O'qituvchi ismi yoki fan bo'yicha qidiruv...",
-      all: "Barchasi",
-      administration: "Rahbariyat",
-      science: "Aniq & Tabiiy fanlar",
+      all: "Barcha xodimlar",
+      administration: "Rahbariyat va boshqaruv",
+      science: "Aniq va Tabiiy fanlar",
       languageTab: "Til fanlari",
-      other: "Boshqa mutaxassislar",
+      other: "Boshqa fanlar",
+      adjunct: "O'rindosh o'qituvchilar",
+      technical: "Texnik xodimlar",
       noResults: "Qidiruv bo'yicha pedagoglar topilmadi.",
+      totalStaff: "Jami xodimlar",
+      mainTeachers: "Asosiy o'qituvchilar",
+      certifiedBadge: "Agentlik attestatsiyasidan o'tgan",
     },
     ru: {
       badge: "Педагогический состав",
-      title: "Педагогический коллектив Урганч 1-ИМИ",
+      title: "Педагогический коллектив и сотрудники Урганч 1-ИМИ",
       subtitle:
-        "44 квалифицированных преподавателя: 2 доктора философии (PhD), 22 магистра и 95.4% специалистов высшей государственной категории.",
+        "Реестр всех 79 квалифицированных преподавателей и сотрудников специализированной школы-интерната №1 г. Ургенча.",
       searchPlaceholder: "Поиск по имени или предмету...",
-      all: "Все",
+      all: "Все сотрудники",
       administration: "Руководство",
       science: "Точные и естественные науки",
       languageTab: "Языковые дисциплины",
-      other: "Другие специалисты",
-      noResults: "Педагоги не найдены.",
+      other: "Другие предметы",
+      adjunct: "Совместители",
+      technical: "Технический персонал",
+      noResults: "Сотрудники не найдены.",
+      totalStaff: "Всего сотрудников",
+      mainTeachers: "Основных преподавателей",
+      certifiedBadge: "Аттестованные специалисты",
     },
     en: {
-      badge: "Faculty Directory",
-      title: "Urganch 1-IMI Academic Faculty",
+      badge: "Faculty & Administration",
+      title: "Urganch 1-IMI Faculty & Academic Staff",
       subtitle:
-        "44 dedicated faculty members: 2 PhDs, 22 master's degree holders, and 95.4% holding highest state category appointments.",
+        "Complete roster of all 79 educators, leaders, and support specialists operating under the Agency network.",
       searchPlaceholder: "Search by name or subject...",
-      all: "All",
-      administration: "Administration",
+      all: "All Staff",
+      administration: "Leadership & Administration",
       science: "Exact & Natural Sciences",
       languageTab: "Languages",
-      other: "Other Specialists",
+      other: "Other Disciplines",
+      adjunct: "Adjunct Faculty",
+      technical: "Support Staff",
       noResults: "No faculty members found.",
+      totalStaff: "Total Staff",
+      mainTeachers: "Core Faculty",
+      certifiedBadge: "Agency Certified",
     },
   }[language]
 
-  const teachers = getInitialTeachers()
+  useEffect(() => {
+    async function load() {
+      setLoading(true)
+      try {
+        const res = await fetch("/api/teachers")
+        if (res.ok) {
+          const data = await res.json()
+          setTeachers(data.data || [])
+        }
+      } catch (err) {
+        console.error("Failed to load teachers:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [])
 
   const categories = [
     { id: "all", label: t.all },
@@ -63,136 +97,151 @@ function TeachersPageContent() {
     { id: "science", label: t.science },
     { id: "language", label: t.languageTab },
     { id: "other", label: t.other },
+    { id: "adjunct", label: t.adjunct },
+    { id: "technical", label: t.technical },
   ]
 
-  const filteredTeachers = teachers.filter((member) => {
-    const name = (member.nameUz + " " + member.nameRu + " " + member.nameEn).toLowerCase()
-    const pos = (member.positionUz + " " + member.positionRu + " " + member.positionEn).toLowerCase()
-    const subj = (member.subjectUz || "").toLowerCase()
-    const query = searchQuery.toLowerCase()
+  const filteredTeachers = useMemo(() => {
+    return teachers.filter((member) => {
+      const name = (member.nameUz + " " + (member.nameRu || "") + " " + (member.nameEn || "")).toLowerCase()
+      const pos = (member.positionUz + " " + (member.positionRu || "") + " " + (member.positionEn || "")).toLowerCase()
+      const subj = (member.subjectUz || "").toLowerCase()
+      const query = searchQuery.toLowerCase().trim()
 
-    const matchesSearch = !searchQuery || name.includes(query) || pos.includes(query) || subj.includes(query)
-    const matchesCategory = activeCategory === "all" || member.category === activeCategory
+      const matchesSearch = !query || name.includes(query) || pos.includes(query) || subj.includes(query)
+      const matchesCategory = activeCategory === "all" || member.category === activeCategory
 
-    return matchesSearch && matchesCategory
-  })
-
-  const getName = (member: (typeof teachers)[0]) => {
-    if (language === "ru") return member.nameRu
-    if (language === "en") return member.nameEn
-    return member.nameUz
-  }
-
-  const getPosition = (member: (typeof teachers)[0]) => {
-    if (language === "ru") return member.positionRu
-    if (language === "en") return member.positionEn
-    return member.positionUz
-  }
+      return matchesSearch && matchesCategory
+    })
+  }, [teachers, searchQuery, activeCategory])
 
   return (
-    <div className="bg-[#F7F9FC] dark:bg-[#071324] text-[#111827] dark:text-slate-100 min-h-screen">
+    <div className="bg-[#F5F7FA] dark:bg-[#0B1726] text-[#172638] dark:text-slate-100 min-h-screen">
       <Header />
 
       {/* Hero Header Banner */}
-      <section className="bg-[#0B1F3A] text-white py-16 lg:py-20 border-b border-white/10">
+      <section className="bg-[#10243A] text-white py-16 lg:py-20 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[#C9A227] text-xs font-bold">
-              <Users size={14} />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[#C6A15B] text-xs font-bold border border-white/10">
+              <Users size={14} className="text-[#C6A15B]" />
               <span>{t.badge}</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
               {t.title}
             </h1>
-            <p className="text-base text-slate-300 font-normal leading-relaxed">
+            <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
               {t.subtitle}
             </p>
+
+            <div className="pt-3 flex flex-wrap gap-3 text-xs">
+              <div className="px-3.5 py-1.5 rounded-lg bg-white/10 border border-white/15 text-slate-200">
+                <span className="text-slate-400 mr-1.5">{t.totalStaff}:</span>
+                <span className="font-extrabold text-[#C6A15B]">79 nafar</span>
+              </div>
+              <div className="px-3.5 py-1.5 rounded-lg bg-white/10 border border-white/15 text-slate-200">
+                <span className="text-slate-400 mr-1.5">{t.mainTeachers}:</span>
+                <span className="font-bold text-white">45 nafar</span>
+              </div>
+              <div className="px-3.5 py-1.5 rounded-lg bg-white/10 border border-white/15 text-slate-200">
+                <span className="text-slate-400 mr-1.5">Portretlar:</span>
+                <span className="font-bold text-[#C6A15B]">31 ta haqiqiy fotosurat</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Main Directory */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Search & Filter Bar */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-10 pb-6 border-b border-slate-200 dark:border-slate-800">
-          <div className="relative w-full md:w-80">
-            <Search size={16} className="absolute left-3.5 top-3 text-slate-400" />
-            <input
-              type="text"
-              placeholder={t.searchPlaceholder}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-[#0B1F3A] border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-[#111827] dark:text-white focus:outline-none focus:border-[#C9A227]"
-            />
+      {/* Directory Content */}
+      <section className="py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          {/* Controls Bar */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#10243A] border border-[#E2E8F0] dark:border-[#1E3650] shadow-xs space-y-4">
+            {/* Search */}
+            <div className="relative">
+              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder={t.searchPlaceholder}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-[#F5F7FA] dark:bg-[#0B1726] border border-[#E2E8F0] dark:border-[#1E3650] rounded-xl text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#C6A15B]"
+              />
+            </div>
+
+            {/* Category tabs */}
+            <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+                    activeCategory === cat.id
+                      ? "bg-[#10243A] text-white shadow-xs dark:bg-[#C6A15B] dark:text-[#10243A]"
+                      : "bg-[#F5F7FA] text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 w-full md:w-auto">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                  activeCategory === cat.id
-                    ? "bg-[#0B1F3A] text-white shadow-xs dark:bg-[#C9A227] dark:text-[#0B1F3A]"
-                    : "bg-white text-slate-700 hover:bg-slate-100 dark:bg-[#0B1F3A] dark:text-slate-300 border border-slate-200 dark:border-slate-800"
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-        </div>
+          {/* Teachers Cards Grid */}
+          {loading ? (
+            <div className="py-20 text-center text-slate-500">O'qituvchilar ma'lumotlari yuklanmoqda...</div>
+          ) : filteredTeachers.length === 0 ? (
+            <div className="p-12 text-center rounded-2xl bg-white dark:bg-[#10243A] border border-[#E2E8F0] dark:border-[#1E3650] text-slate-500">
+              {t.noResults}
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {filteredTeachers.map((member) => (
+                <div
+                  key={member.id}
+                  className="rounded-2xl bg-white dark:bg-[#10243A] border border-[#E2E8F0] dark:border-[#1E3650] p-6 text-center flex flex-col justify-between hover:border-[#C6A15B] transition-all hover:shadow-md group"
+                >
+                  <div>
+                    {/* Portrait Avatar */}
+                    <div className="relative w-28 h-28 mx-auto mb-4 rounded-full overflow-hidden border-2 border-[#C6A15B] shadow-xs bg-slate-100 dark:bg-slate-800">
+                      <Image
+                        src={member.image || "/images/logo.jpg"}
+                        alt={member.nameUz}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
 
-        {/* Directory Grid */}
-        {filteredTeachers.length === 0 ? (
-          <div className="text-center py-20 p-8 rounded-2xl bg-white dark:bg-[#0B1F3A] border border-slate-200 dark:border-slate-800">
-            <Users size={40} className="mx-auto text-slate-300 mb-3" />
-            <p className="text-sm font-semibold text-slate-500">{t.noResults}</p>
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredTeachers.map((member) => (
-              <div
-                key={member.id}
-                className="academic-card p-6 rounded-2xl bg-white dark:bg-[#0B1F3A] border border-slate-200 dark:border-slate-800 text-center flex flex-col justify-between shadow-xs"
-              >
-                <div>
-                  <div className="relative w-28 h-28 mx-auto mb-4 rounded-full overflow-hidden border-3 border-[#C9A227] shadow-xs bg-slate-200">
-                    <Image
-                      src={member.image || "/images/logo.jpg"}
-                      alt={getName(member)}
-                      fill
-                      className="object-cover"
-                    />
+                    <h3 className="font-extrabold text-[#172638] dark:text-white text-sm mb-1.5 leading-snug">
+                      {member.nameUz}
+                    </h3>
+
+                    <p className="text-xs font-semibold text-[#183650] dark:text-sky-300 mb-2">
+                      {member.positionUz}
+                    </p>
+
+                    {member.section && (
+                      <span className="text-[10px] text-slate-400 font-medium block mb-3">
+                        {member.section}
+                      </span>
+                    )}
                   </div>
 
-                  <h3 className="font-bold text-[#0B1F3A] dark:text-white text-sm mb-1 leading-snug">
-                    {getName(member)}
-                  </h3>
-
-                  <p className="text-xs text-[#123B66] dark:text-blue-300 font-medium mb-3">
-                    {getPosition(member)}
-                  </p>
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                    {member.subjectUz && (
+                      <span className="inline-block px-3 py-1 rounded-md bg-[#F5F7FA] dark:bg-[#0B1726] border border-[#E2E8F0] dark:border-[#1E3650] text-[11px] font-semibold text-[#10243A] dark:text-[#C6A15B]">
+                        {member.subjectUz}
+                      </span>
+                    )}
+                  </div>
                 </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
-                <div>
-                  {member.degree && (
-                    <div className="inline-block px-2.5 py-1 rounded-md bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-slate-700 text-[11px] font-semibold text-[#0B1F3A] dark:text-slate-200 mb-2">
-                      {member.degree}
-                    </div>
-                  )}
-                  {member.qualification && !member.degree && (
-                    <div className="inline-block px-2.5 py-1 rounded-md bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-slate-700 text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-2">
-                      {member.qualification}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
+      <TelegramCTA />
       <Footer />
     </div>
   )

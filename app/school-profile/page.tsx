@@ -234,17 +234,17 @@ function SchoolProfileContent() {
             </div>
 
             <div className="p-6 bg-white dark:bg-[#0B1F3A] rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-              <div className="font-bold text-sm text-[#0B1F3A] dark:text-white">Seytirzayeva Iroda</div>
-              <div className="text-xs text-slate-500 dark:text-slate-400">Seytinazarovna</div>
+              <div className="font-bold text-sm text-[#0B1F3A] dark:text-white">Quryazova Ruxsora</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">Madamin qizi</div>
               <div className="mt-2 text-xs font-bold text-[#123B66] dark:text-blue-300">Ma'naviy ishlar bo'yicha o'rinbosar</div>
-              <div className="text-[11px] text-[#C9A227] font-semibold mt-1">Psixologiya magistri (MSc)</div>
+              <div className="text-[11px] text-[#C9A227] font-semibold mt-1">Ingliz tili magistri (MA)</div>
             </div>
 
             <div className="p-6 bg-white dark:bg-[#0B1F3A] rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-              <div className="font-bold text-sm text-[#0B1F3A] dark:text-white">Quryazova Ruxsora</div>
-              <div className="text-xs text-slate-500 dark:text-slate-400">Madamin qizi</div>
-              <div className="mt-2 text-xs font-bold text-[#123B66] dark:text-blue-300">Maktab maslahatchisi</div>
-              <div className="text-[11px] text-[#C9A227] font-semibold mt-1">Ingliz tili magistri (MA)</div>
+              <div className="font-bold text-sm text-[#0B1F3A] dark:text-white">Ataniyazov Ravshan</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">Xo'jalik bo'limi</div>
+              <div className="mt-2 text-xs font-bold text-[#123B66] dark:text-blue-300">Xo'jalik ishlari bo'yicha o'rinbosar</div>
+              <div className="text-[11px] text-[#C9A227] font-semibold mt-1">Ta'minot va boshqaruv</div>
             </div>
           </div>
         </div>

@@ -20,8 +20,6 @@ export default function ForStudents() {
       res3Desc: "Xalqaro va respublika olimpiadalariga tajribali murabbiylar rahbarligida maqsadli tayyorgarlik.",
       res4Title: "Yoshlar Startaplari & Loyihalar",
       res4Desc: "Smart Heating, Real Rate va Loopify kabi 10 ta mualliflik loyihalari va grantlar.",
-      lifeTitle: "Maktab Tadbirlari va To'garaklari",
-      channelBtn: "Barcha yangiliklar Telegramda",
     },
     ru: {
       badge: "Студенческая жизнь",
@@ -36,8 +34,6 @@ export default function ForStudents() {
       res3Desc: "Целенаправленная подготовка к национальным и международным олимпиадам с наставниками.",
       res4Title: "Молодежные стартапы и проекты",
       res4Desc: "10 стартап-проектов школы, включая Smart Heating, Real Rate и Loopify.",
-      lifeTitle: "Школьные мероприятия и клубы",
-      channelBtn: "Все события в Telegram",
     },
     en: {
       badge: "Student Life & Extracurriculars",
@@ -52,8 +48,6 @@ export default function ForStudents() {
       res3Desc: "Targeted preparation for prestigious international and regional STEM contests.",
       res4Title: "Student Startups & Innovation",
       res4Desc: "Ten active student-led initiatives including Smart Heating System and Loopify.",
-      lifeTitle: "Campus Life & Clubs",
-      channelBtn: "Follow Life on Telegram",
     },
   }[language]
 
@@ -101,64 +95,6 @@ export default function ForStudents() {
               </div>
             )
           })}
-        </div>
-
-        {/* Campus Life Visual Strip */}
-        <div className="p-8 rounded-2xl bg-white dark:bg-[#0B1F3A] border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <div>
-              <h3 className="text-xl font-bold text-[#0B1F3A] dark:text-white">
-                {t.lifeTitle}
-              </h3>
-              <p className="text-xs text-[#64748B] dark:text-slate-400 mt-1">
-                Sport musobaqalari, munozara klublari va ijodiy tadbirlar
-              </p>
-            </div>
-            <a
-              href="https://t.me/Urganch_IMI"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0B1F3A] hover:bg-[#123B66] text-white dark:bg-[#C9A227] dark:text-[#0B1F3A] text-xs font-bold rounded-lg transition-colors"
-            >
-              <span>{t.channelBtn}</span>
-              <ExternalLink size={12} />
-            </a>
-          </div>
-
-          <div className="grid sm:grid-cols-3 gap-6">
-            <div className="relative h-56 rounded-xl overflow-hidden group">
-              <img
-                src="/images/photo-2025-10-24-21-21-45.jpg"
-                alt="Maktab tadbirlari"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                <span className="text-white text-xs font-bold">Ilmiy konferensiyalar va seminarlar</span>
-              </div>
-            </div>
-
-            <div className="relative h-56 rounded-xl overflow-hidden group">
-              <img
-                src="/images/photo-2025-10-24-21-21-52.jpg"
-                alt="O'quvchilar jamoasi"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                <span className="text-white text-xs font-bold">Intellektual va sport musobaqalari</span>
-              </div>
-            </div>
-
-            <div className="relative h-56 rounded-xl overflow-hidden group">
-              <img
-                src="/images/photo-2025-11-02-18-20-37.jpg"
-                alt="Laboratoriya mashg'ulotlari"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-                <span className="text-white text-xs font-bold">Robototexnika va Sun'iy intellekt to'garagi</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>

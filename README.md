@@ -6,10 +6,13 @@ O'zbekiston Respublikasi Ixtisoslashtirilgan ta'lim muassasalari agentligi tizim
 
 ## 🚀 Texnologiyalar
 
-- **Framework:** Next.js (App Router)
-- **UI & Dizayn:** React, Tailwind CSS, Lucide Icons, Radix UI
-- **Backend & Ma'lumotlar:** Next.js Route Handlers, JSON DB (`lib/data/db.json`)
-- **Integratsiya:** Telegram Bot API (avtomatik arizalar va yangiliklar sinxronizatsiyasi)
+- **Framework:** Next.js 16 (App Router, Turbopack)
+- **UI & Dizayn:** React, Tailwind CSS, Lucide Icons, Radix UI (Premium Academic Palette)
+- **Ma'lumotlar bazasi:** Next.js Route Handlers, JSON DB (`lib/data/db.json`, `certificates.json`, `teachers.json`)
+- **Sertifikatlar arxivi:** 674 ta tasdiqlangan milliy va xalqaro sertifikatlar (0 ta dublikat, tozalangan)
+- **Telegram integratsiyasi:** Server-side Public Preview (`https://t.me/s/Urganch_IMI`) avtomatik yangiliklar sinxronizatsiyasi
+- **Video taqdimot:** Rasmiy YouTube video integratsiyasi (1080p Full HD)
+- **O'qituvchilar:** 79 nafar tasdiqlangan pedagoglar tarkibi (Quryazova Ruxsora - MMIBDO')
 - **Tillar:** O'zbekcha (UZ), Ruscha (RU), Inglizcha (EN)
 
 ---

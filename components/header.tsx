@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Menu, X, ExternalLink, Moon, Sun } from "lucide-react"
+import { Menu, X, ExternalLink, Moon, Sun, Send, Phone } from "lucide-react"
 import { useLanguage } from "@/lib/language-context"
 
 export default function Header() {
@@ -32,16 +32,15 @@ export default function Header() {
 
   const navItems = [
     { href: "/", uz: "Bosh sahifa", ru: "Главная", en: "Home" },
-    { href: "/#about", uz: "Maktab", ru: "О школе", en: "School" },
-    { href: "/#education", uz: "Ta'lim", ru: "Образование", en: "Academics" },
-    { href: "/#students", uz: "O'quvchilar", ru: "Ученики", en: "Students" },
+    { href: "/about", uz: "Maktab", ru: "О школе", en: "About" },
+    { href: "/education", uz: "Ta'lim", ru: "Образование", en: "Academics" },
+    { href: "/students", uz: "O'quvchilar", ru: "Ученики", en: "Students" },
     { href: "/teachers", uz: "O'qituvchilar", ru: "Учителя", en: "Faculty" },
-    { href: "/#achievements", uz: "Yutuqlar", ru: "Достижения", en: "Achievements" },
+    { href: "/achievements", uz: "Yutuqlar & Sertifikatlar", ru: "Достижения", en: "Achievements" },
     { href: "/news", uz: "Yangiliklar", ru: "Новости", en: "News" },
-    { href: "/#gallery", uz: "Galereya", ru: "Галерея", en: "Gallery" },
-    { href: "/school-profile", uz: "Maktab profili", ru: "Профиль школы", en: "School Profile" },
     { href: "/admissions", uz: "Qabul", ru: "Приём", en: "Admissions" },
-    { href: "/#contact", uz: "Aloqa", ru: "Контакты", en: "Contact" },
+    { href: "/school-profile", uz: "Maktab profili", ru: "Профиль", en: "Profile" },
+    { href: "/contact", uz: "Aloqa", ru: "Контакты", en: "Contact" },
   ]
 
   const getLabel = (item: (typeof navItems)[0]) => {
@@ -51,27 +50,38 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 dark:bg-[#0B1F3A]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#1E3A5F] transition-colors shadow-xs">
-      {/* Top micro-bar with official affiliation & School Mode direct link */}
-      <div className="bg-[#0B1F3A] text-white text-xs py-1 px-4 border-b border-white/10 hidden md:block">
+    <header className="sticky top-0 z-50 bg-white/95 dark:bg-[#10243A]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#1E3650] transition-colors shadow-xs">
+      {/* Top micro-bar: Agency affiliation, Telegram channel, contacts, Maktab rejimi */}
+      <div className="bg-[#10243A] text-white text-xs py-1.5 px-4 border-b border-white/10 hidden md:block">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2 text-slate-300">
-            <span className="inline-block w-2 h-2 rounded-full bg-[#C9A227]"></span>
+            <span className="inline-block w-2 h-2 rounded-full bg-[#C6A15B]"></span>
             <span>Ixtisoslashtirilgan ta'lim muassasalari agentligi tizimidagi 1-son ixtisoslashtirilgan maktab-internati</span>
           </div>
           <div className="flex items-center gap-4">
             <a
+              href="https://t.me/Urganch_IMI"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-[#C6A15B] hover:text-white transition-colors"
+            >
+              <Send size={11} />
+              <span>@Urganch_IMI</span>
+            </a>
+            <span className="text-slate-600">|</span>
+            <a
               href="https://dish-load-05854082.figma.site/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[#C9A227] hover:text-white font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 text-[#C6A15B] hover:text-white font-semibold transition-colors"
             >
               <span>🏫 Maktab rejimi</span>
-              <ExternalLink size={12} />
+              <ExternalLink size={11} />
             </a>
-            <span className="text-slate-500">|</span>
-            <a href="tel:+998622232031" className="hover:text-white transition-colors text-slate-300">
-              +998 (62) 223-20-31
+            <span className="text-slate-600">|</span>
+            <a href="tel:+998622232031" className="hover:text-white transition-colors text-slate-300 flex items-center gap-1">
+              <Phone size={11} />
+              <span>+998 (62) 223-20-31</span>
             </a>
           </div>
         </div>
@@ -81,7 +91,7 @@ export default function Header() {
         <div className="flex justify-between items-center h-20">
           {/* Logo & School Identity */}
           <Link href="/" className="flex items-center gap-3.5 group">
-            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#C9A227] shadow-xs flex-shrink-0 bg-white">
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#C6A15B] shadow-xs flex-shrink-0 bg-white">
               <Image
                 src="/images/logo.jpg"
                 alt="Urganch 1-IMI Logo"
@@ -93,11 +103,11 @@ export default function Header() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold text-[#0B1F3A] dark:text-white tracking-tight leading-none group-hover:text-[#123B66] dark:group-hover:text-[#C9A227] transition-colors">
+                <h1 className="text-lg font-bold text-[#10243A] dark:text-white tracking-tight leading-none group-hover:text-[#183650] dark:group-hover:text-[#C6A15B] transition-colors">
                   URGANCH 1-IMI
                 </h1>
               </div>
-              <p className="text-[11px] font-medium text-[#64748B] dark:text-slate-400 mt-1 leading-tight">
+              <p className="text-[11px] font-medium text-[#68778A] dark:text-slate-400 mt-1 leading-tight">
                 {language === "ru"
                   ? "Специализированная школа-интернат №1"
                   : language === "en"
@@ -108,12 +118,12 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden xl:flex items-center gap-4">
+          <nav className="hidden xl:flex items-center gap-3.5">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-xs font-semibold text-[#111827] dark:text-slate-200 hover:text-[#C9A227] dark:hover:text-[#C9A227] transition-colors py-1 px-1.5"
+                className="text-xs font-semibold text-[#172638] dark:text-slate-200 hover:text-[#C6A15B] dark:hover:text-[#C6A15B] transition-colors py-1 px-1"
               >
                 {getLabel(item)}
               </Link>
@@ -122,19 +132,19 @@ export default function Header() {
 
           {/* Actions & Utilities */}
           <div className="hidden md:flex items-center gap-3">
-            {/* School Mode Prominent CTA */}
+            {/* School Mode Direct Button */}
             <a
               href="https://dish-load-05854082.figma.site/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-[#C9A227] bg-[#C9A227]/10 text-[#0B1F3A] dark:text-[#C9A227] hover:bg-[#C9A227] hover:text-[#0B1F3A] transition-all shadow-xs"
-              title="O‘quvchi va maktab tizimi"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border border-[#C6A15B] bg-[#C6A15B]/10 text-[#10243A] dark:text-[#C6A15B] hover:bg-[#C6A15B] hover:text-[#10243A] transition-all shadow-xs"
+              title="O‘quvchi va maktab rejimi"
             >
               <span>🏫 Maktab rejimi</span>
               <ExternalLink size={12} />
             </a>
 
-            {/* Dark mode button */}
+            {/* Dark mode toggle */}
             <button
               onClick={toggleDarkMode}
               className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -144,14 +154,14 @@ export default function Header() {
             </button>
 
             {/* Language Selector */}
-            <div className="flex bg-slate-100 dark:bg-slate-800 p-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+            <div className="flex bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700">
               {(["uz", "ru", "en"] as const).map((lang) => (
                 <button
                   key={lang}
                   onClick={() => setLanguage(lang)}
-                  className={`px-2 py-1 text-xs font-bold rounded transition-all ${
+                  className={`px-2 py-1 text-xs font-bold rounded-md transition-all ${
                     language === lang
-                      ? "bg-[#0B1F3A] text-white shadow-xs dark:bg-[#C9A227] dark:text-[#0B1F3A]"
+                      ? "bg-[#10243A] text-white shadow-xs dark:bg-[#C6A15B] dark:text-[#10243A]"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
                   }`}
                 >
@@ -162,8 +172,8 @@ export default function Header() {
 
             {/* Admissions CTA */}
             <Link href="/admissions">
-              <button className="px-4 py-2 bg-[#0B1F3A] hover:bg-[#123B66] text-white text-xs font-bold rounded-lg transition-all shadow-xs dark:bg-white dark:text-[#0B1F3A] dark:hover:bg-slate-200">
-                {language === "ru" ? "Подать заявку" : language === "en" ? "Admissions" : "Qabulga topshirish"}
+              <button className="px-4 py-2 bg-[#10243A] hover:bg-[#183650] text-white text-xs font-bold rounded-lg transition-all shadow-xs dark:bg-[#C6A15B] dark:text-[#10243A] dark:hover:bg-[#d8b030]">
+                {language === "ru" ? "Приём" : language === "en" ? "Admissions" : "Qabul 2026"}
               </button>
             </Link>
           </div>
@@ -174,7 +184,7 @@ export default function Header() {
               href="https://dish-load-05854082.figma.site/"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-2.5 py-1 text-xs font-bold rounded border border-[#C9A227] text-[#0B1F3A] dark:text-[#C9A227] bg-[#C9A227]/10"
+              className="px-2.5 py-1 text-xs font-bold rounded-lg border border-[#C6A15B] text-[#10243A] dark:text-[#C6A15B] bg-[#C6A15B]/10"
             >
               🏫 Maktab rejimi
             </a>
@@ -190,13 +200,13 @@ export default function Header() {
 
         {/* Mobile Navigation Drawer */}
         {isOpen && (
-          <div className="xl:hidden py-4 border-t border-slate-200 dark:border-slate-800 animate-fade-in space-y-2">
+          <div className="xl:hidden py-4 border-t border-slate-200 dark:border-slate-800 animate-fade-in space-y-3">
             <div className="grid grid-cols-2 gap-1 pb-3 border-b border-slate-200 dark:border-slate-800">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                  className="px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   {getLabel(item)}
@@ -213,9 +223,9 @@ export default function Header() {
                       setLanguage(lang)
                       setIsOpen(false)
                     }}
-                    className={`px-2.5 py-1 text-xs font-bold rounded ${
+                    className={`px-2.5 py-1 text-xs font-bold rounded-md ${
                       language === lang
-                        ? "bg-[#0B1F3A] text-white dark:bg-[#C9A227] dark:text-[#0B1F3A]"
+                        ? "bg-[#10243A] text-white dark:bg-[#C6A15B] dark:text-[#10243A]"
                         : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
                     }`}
                   >
@@ -232,17 +242,21 @@ export default function Header() {
               </button>
             </div>
 
-            <div className="pt-3 space-y-2 px-2">
-              <Link href="/admissions" onClick={() => setIsOpen(false)} className="block">
-                <button className="w-full py-2.5 bg-[#0B1F3A] text-white text-xs font-bold rounded-lg shadow-xs hover:bg-[#123B66]">
-                  {language === "ru" ? "Подать заявку на поступление" : language === "en" ? "Apply for Admission" : "Qabulga topshirish"}
-                </button>
-              </Link>
+            <div className="pt-2 space-y-2 px-2">
+              <a
+                href="https://t.me/Urganch_IMI"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-2.5 bg-[#0088cc] text-white text-xs font-bold rounded-xl shadow-xs flex items-center justify-center gap-2"
+              >
+                <Send size={14} />
+                <span>Telegram kanalimiz (@Urganch_IMI)</span>
+              </a>
               <a
                 href="https://dish-load-05854082.figma.site/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-center py-2 bg-[#C9A227]/15 text-[#0B1F3A] dark:text-[#C9A227] border border-[#C9A227] rounded-lg text-xs font-bold"
+                className="block text-center py-2.5 bg-[#C6A15B]/15 text-[#10243A] dark:text-[#C6A15B] border border-[#C6A15B] rounded-xl text-xs font-bold"
               >
                 🏫 Maktab rejimi — O‘quvchi va maktab tizimi
               </a>

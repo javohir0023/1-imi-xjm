@@ -1,6 +1,6 @@
 import fs from "fs"
 import path from "path"
-import { NewsItem, ApplicationItem, AchievementItem, TeacherItem, GalleryItem, ContactMessageItem } from "./types"
+import { NewsItem, ApplicationItem, AchievementItem, TeacherItem, GalleryItem, ContactMessageItem, CertificateItem } from "./types"
 import { INITIAL_NEWS, INITIAL_ACHIEVEMENTS, INITIAL_TEACHERS, INITIAL_GALLERY } from "./data/initial-data"
 import { supabase, isSupabaseConfigured } from "./supabase"
 
@@ -424,7 +424,22 @@ export async function deleteContactMessage(id: string): Promise<boolean> {
 }
 
 // Teachers functions
+const TEACHERS_JSON_PATH = path.join(process.cwd(), "lib", "data", "teachers.json")
+const CERTIFICATES_JSON_PATH = path.join(process.cwd(), "lib", "data", "certificates.json")
+
 export function getTeachers(): TeacherItem[] {
+  try {
+    if (fs.existsSync(TEACHERS_JSON_PATH)) {
+      const raw = fs.readFileSync(TEACHERS_JSON_PATH, "utf-8")
+      const list = JSON.parse(raw) as TeacherItem[]
+      if (Array.isArray(list) && list.length > 0) {
+        return list
+      }
+    }
+  } catch (err) {
+    console.warn("[Teachers] Failed to read teachers.json, falling back to db:", err)
+  }
+
   const db = getDb()
   return db.teachers || []
 }
@@ -438,6 +453,21 @@ export function saveTeacher(item: TeacherItem): TeacherItem {
     db.teachers.push(item)
   }
   saveDb(db)
+
+  // Also update teachers.json if exists
+  try {
+    if (fs.existsSync(TEACHERS_JSON_PATH)) {
+      const raw = fs.readFileSync(TEACHERS_JSON_PATH, "utf-8")
+      const list = JSON.parse(raw) as TeacherItem[]
+      const idx = list.findIndex((t) => t.id === item.id)
+      if (idx >= 0) list[idx] = item
+      else list.push(item)
+      fs.writeFileSync(TEACHERS_JSON_PATH, JSON.stringify(list, null, 2), "utf-8")
+    }
+  } catch (err) {
+    console.error("[Teachers] Failed to update teachers.json:", err)
+  }
+
   return item
 }
 
@@ -447,9 +477,50 @@ export function deleteTeacher(id: number): boolean {
   db.teachers = db.teachers.filter((t) => t.id !== id)
   if (db.teachers.length !== initialLen) {
     saveDb(db)
-    return true
   }
-  return false
+
+  try {
+    if (fs.existsSync(TEACHERS_JSON_PATH)) {
+      const raw = fs.readFileSync(TEACHERS_JSON_PATH, "utf-8")
+      let list = JSON.parse(raw) as TeacherItem[]
+      list = list.filter((t) => t.id !== id)
+      fs.writeFileSync(TEACHERS_JSON_PATH, JSON.stringify(list, null, 2), "utf-8")
+    }
+  } catch (err) {
+    console.error("[Teachers] Failed to delete from teachers.json:", err)
+  }
+
+  return true
+}
+
+// Student Certificates Archive functions (Excel import + 23.10 ERP data)
+export function getCertificates(): CertificateItem[] {
+  try {
+    if (fs.existsSync(CERTIFICATES_JSON_PATH)) {
+      const raw = fs.readFileSync(CERTIFICATES_JSON_PATH, "utf-8")
+      const list = JSON.parse(raw) as CertificateItem[]
+      if (Array.isArray(list)) return list
+    }
+  } catch (err) {
+    console.error("[Certificates] Error reading certificates.json:", err)
+  }
+  return []
+}
+
+export function saveCertificate(item: CertificateItem): CertificateItem {
+  const list = getCertificates()
+  const idx = list.findIndex((c) => c.id === item.id)
+  if (idx >= 0) {
+    list[idx] = item
+  } else {
+    list.unshift(item)
+  }
+  try {
+    fs.writeFileSync(CERTIFICATES_JSON_PATH, JSON.stringify(list, null, 2), "utf-8")
+  } catch (err) {
+    console.error("[Certificates] Failed to save certificates.json:", err)
+  }
+  return item
 }
 
 // Achievements functions
