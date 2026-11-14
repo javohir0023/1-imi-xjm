@@ -9,6 +9,7 @@ import {
   FileCheck2,
   RefreshCw,
   CheckCircle,
+  CheckCircle2,
   XCircle,
   Trash2,
   ExternalLink,
@@ -82,6 +83,7 @@ export default function AdminDashboardPage() {
   const [isSubmittingTeacher, setIsSubmittingTeacher] = useState(false)
 
   // Applications Filters & Search
+  const [loadError, setLoadError] = useState("")
   const [appSearch, setAppSearch] = useState("")
   const [appStatusFilter, setAppStatusFilter] = useState<string>("all")
   const [appGradeFilter, setAppGradeFilter] = useState<string>("all")
@@ -108,23 +110,33 @@ export default function AdminDashboardPage() {
     if (showIndicator) setIsRefreshingApps(true)
     try {
       const res = await fetch("/api/admin/applications", { cache: "no-store" })
-      if (res.ok) {
-        const d = await res.json()
+      if (res.status === 401) {
+        router.push("/admin/login")
+        return
+      }
+      const d = await res.json().catch(() => null)
+      if (res.ok && d?.success) {
         setApplications(d.data || [])
+        setLoadError("")
+      } else {
+        setLoadError(d?.message || "Arizalarni yuklab bo'lmadi")
       }
     } catch (err) {
       console.error("Failed to load applications:", err)
+      setLoadError("Serverga ulanib bo'lmadi")
     } finally {
       if (showIndicator) setIsRefreshingApps(false)
     }
-  }, [])
+  }, [router])
 
   const loadMessages = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/messages", { cache: "no-store" })
-      if (res.ok) {
-        const d = await res.json()
+      const d = await res.json().catch(() => null)
+      if (res.ok && d?.success) {
         setContactMessages(d.data || [])
+      } else if (res.status !== 401) {
+        setLoadError(d?.message || "Murojaatlarni yuklab bo'lmadi")
       }
     } catch (err) {
       console.error("Failed to load contact messages:", err)
@@ -319,6 +331,11 @@ export default function AdminDashboardPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updated),
       })
+      if (!res.ok) {
+        const d = await res.json().catch(() => null)
+        alert(d?.message || "Saqlab bo'lmadi")
+        return
+      }
       if (res.ok) {
         setNews((prev) => prev.map((n) => (n.id === item.id ? updated : n)))
         setStatusMessage(
@@ -342,6 +359,9 @@ export default function AdminDashboardPage() {
       const res = await fetch(`/api/admin/news?id=${id}`, { method: "DELETE" })
       if (res.ok) {
         setNews((prev) => prev.filter((n) => n.id !== id))
+      } else {
+        const d = await res.json().catch(() => null)
+        alert(d?.message || "O'chirib bo'lmadi")
       }
     } catch {
       alert("Xatolik yuz berdi")
@@ -361,6 +381,9 @@ export default function AdminDashboardPage() {
         if (selectedApp && selectedApp.id === id) {
           setSelectedApp({ ...selectedApp, status })
         }
+      } else {
+        const d = await res.json().catch(() => null)
+        alert(d?.message || "Holatni o'zgartirib bo'lmadi")
       }
     } catch {
       alert("Xatolik yuz berdi")
@@ -374,6 +397,9 @@ export default function AdminDashboardPage() {
       if (res.ok) {
         setApplications((prev) => prev.filter((a) => a.id !== id))
         if (selectedApp?.id === id) setSelectedApp(null)
+      } else {
+        const d = await res.json().catch(() => null)
+        alert(d?.message || "Arizani o'chirib bo'lmadi")
       }
     } catch {
       alert("Xatolik yuz berdi")
@@ -393,6 +419,9 @@ export default function AdminDashboardPage() {
         if (selectedMsg && selectedMsg.id === id) {
           setSelectedMsg({ ...selectedMsg, status })
         }
+      } else {
+        const d = await res.json().catch(() => null)
+        alert(d?.message || "Holatni o'zgartirib bo'lmadi")
       }
     } catch {
       alert("Xatolik yuz berdi")
@@ -406,6 +435,9 @@ export default function AdminDashboardPage() {
       if (res.ok) {
         setContactMessages((prev) => prev.filter((m) => m.id !== id))
         if (selectedMsg?.id === id) setSelectedMsg(null)
+      } else {
+        const d = await res.json().catch(() => null)
+        alert(d?.message || "Xabarni o'chirib bo'lmadi")
       }
     } catch {
       alert("Xatolik yuz berdi")
@@ -1240,6 +1272,12 @@ export default function AdminDashboardPage() {
                 )}
               </div>
             </div>
+
+            {loadError && (
+              <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-xs">
+                ⚠️ {loadError}
+              </div>
+            )}
 
             {/* Sub-tab toggle pills */}
             <div className="flex gap-2">

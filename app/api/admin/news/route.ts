@@ -1,19 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { isAuthorized, NO_CACHE_HEADERS } from "@/lib/admin-auth"
 import { getNews, saveNewsItem, deleteNewsItem } from "@/lib/db"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
-
-const NO_CACHE_HEADERS = {
-  "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
-  Pragma: "no-cache",
-  Expires: "0",
-}
-
-function isAuthorized(request: NextRequest): boolean {
-  const cookie = request.cookies.get("imi_admin_session")
-  return cookie?.value === "authenticated_session_token_imi"
-}
 
 export async function GET(request: NextRequest) {
   if (!isAuthorized(request)) {
@@ -88,9 +78,13 @@ export async function DELETE(request: NextRequest) {
       { status: 400, headers: NO_CACHE_HEADERS },
     )
   }
-  const deleted = deleteNewsItem(id)
-  return NextResponse.json(
-    { success: deleted },
-    { headers: NO_CACHE_HEADERS },
-  )
+  try {
+    const deleted = deleteNewsItem(id)
+    return NextResponse.json({ success: deleted }, { headers: NO_CACHE_HEADERS })
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500, headers: NO_CACHE_HEADERS },
+    )
+  }
 }

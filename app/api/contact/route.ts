@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { addContactMessage } from "@/lib/db"
+import { addContactMessage, StorageError } from "@/lib/db"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -41,10 +41,11 @@ export async function POST(request: NextRequest) {
         `💬 <b>Xabar:</b> ${message}\n` +
         `🕐 <b>Vaqt:</b> ${new Date().toLocaleString("uz-UZ", { timeZone: "Asia/Tashkent" })}`
 
-      fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+        signal: AbortSignal.timeout(5000),
       }).catch((e) => console.error("[Contact API] Telegram error:", e))
     }
 
@@ -59,8 +60,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[Contact API] Error:", error)
     return NextResponse.json(
-      { success: false, message: "Xatolik yuz berdi. Qayta urinib ko'ring." },
-      { status: 500, headers: { "Cache-Control": "no-store" } },
+      { success: false, message: error instanceof StorageError ? "Xabarni hozir saqlab bo'lmadi. Birozdan so'ng qayta urinib ko'ring." : "Xatolik yuz berdi. Qayta urinib ko'ring." },
+      { status: error instanceof StorageError ? 503 : 500, headers: { "Cache-Control": "no-store" } },
     )
   }
 }

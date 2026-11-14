@@ -1,8 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { isAuthorized } from "@/lib/admin-auth"
 import { getTeachers, saveTeacher, deleteTeacher } from "@/lib/db"
 import { TeacherItem } from "@/lib/types"
 
 export async function GET(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ success: false, message: "Ruxsat berilmagan" }, { status: 401 })
+  }
   try {
     const list = getTeachers()
     return NextResponse.json({
@@ -11,11 +15,14 @@ export async function GET(request: NextRequest) {
       data: list,
     })
   } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 })
+    return NextResponse.json({ success: false, error: err.message, message: err.message }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ success: false, message: "Ruxsat berilmagan" }, { status: 401 })
+  }
   try {
     const body = await request.json()
     if (!body.nameUz || !body.positionUz) {
@@ -45,11 +52,14 @@ export async function POST(request: NextRequest) {
     saveTeacher(newTeacher)
     return NextResponse.json({ success: true, data: newTeacher })
   } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 })
+    return NextResponse.json({ success: false, error: err.message, message: err.message }, { status: 500 })
   }
 }
 
 export async function DELETE(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ success: false, message: "Ruxsat berilmagan" }, { status: 401 })
+  }
   try {
     const { searchParams } = new URL(request.url)
     const id = parseInt(searchParams.get("id") || "0", 10)
@@ -59,6 +69,6 @@ export async function DELETE(request: NextRequest) {
     const res = deleteTeacher(id)
     return NextResponse.json({ success: res })
   } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 })
+    return NextResponse.json({ success: false, error: err.message, message: err.message }, { status: 500 })
   }
 }

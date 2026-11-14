@@ -1,8 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { isAuthorized } from "@/lib/admin-auth"
 import { getCertificates, saveCertificate } from "@/lib/db"
 import { CertificateItem } from "@/lib/types"
 
 export async function GET(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ success: false, message: "Ruxsat berilmagan" }, { status: 401 })
+  }
   try {
     const list = getCertificates()
     return NextResponse.json({
@@ -13,11 +17,14 @@ export async function GET(request: NextRequest) {
       data: list,
     })
   } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 })
+    return NextResponse.json({ success: false, error: err.message, message: err.message }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ success: false, message: "Ruxsat berilmagan" }, { status: 401 })
+  }
   try {
     const body = await request.json()
     if (!body.studentName || !body.subject) {
@@ -54,6 +61,6 @@ export async function POST(request: NextRequest) {
     saveCertificate(newCert)
     return NextResponse.json({ success: true, data: newCert })
   } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 })
+    return NextResponse.json({ success: false, error: err.message, message: err.message }, { status: 500 })
   }
 }

@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { addApplication } from "@/lib/db"
+import { addApplication, StorageError } from "@/lib/db"
 import { sendApplicationTelegramNotification } from "@/lib/telegram"
 
 export const dynamic = "force-dynamic"
@@ -67,10 +67,12 @@ export async function POST(request: NextRequest) {
 
     console.log(`[Applications API] New application saved: ID=${savedApp.id}, Student=${savedApp.studentName}`)
 
-    // Forward Telegram notification to Admin (background)
-    sendApplicationTelegramNotification(savedApp).catch((err) => {
-      console.error("[Applications API] Background Telegram notification failed:", err)
-    })
+    // Telegram xabarnomasi (Vercel'da javobdan keyin funksiya to'xtatilishi mumkin, shuning uchun kutamiz)
+    try {
+      await sendApplicationTelegramNotification(savedApp)
+    } catch (err) {
+      console.error("[Applications API] Telegram notification failed:", err)
+    }
 
     return NextResponse.json(
       {
@@ -86,9 +88,15 @@ export async function POST(request: NextRequest) {
     )
   } catch (error) {
     console.error("[Applications API] Error processing application:", error)
+    const isStorage = error instanceof StorageError
     return NextResponse.json(
-      { success: false, message: "Texnik xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko'ring." },
-      { status: 500, headers: { "Cache-Control": "no-store" } },
+      {
+        success: false,
+        message: isStorage
+          ? "Arizani hozir saqlab bo'lmadi. Iltimos, birozdan so'ng qayta urinib ko'ring yoki maktabga qo'ng'iroq qiling."
+          : "Texnik xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.",
+      },
+      { status: isStorage ? 503 : 500, headers: { "Cache-Control": "no-store" } },
     )
   }
 }

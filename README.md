@@ -31,7 +31,7 @@ cp .env.example .env.local
 ```
 Kerakli parametrlarni sozlang:
 - `ADMIN_USERNAME`: Admin login (standart: `admin`)
-- `ADMIN_PASSWORD`: Admin paroli (standart: `urganch1imi2026`)
+- `ADMIN_PASSWORD`: Admin paroli (majburiy, standart parol yo'q)
 - `TELEGRAM_BOT_TOKEN`: Telegram bot tokeni (ixtiyoriy)
 - `TELEGRAM_ADMIN_CHAT_ID`: Admin chat/guruh ID (ixtiyoriy)
 
@@ -52,8 +52,7 @@ npm start
 ## 🔐 Admin Paneli
 
 - **Manzil:** `/admin` yoki `/admin/login`
-- **Standart login:** `admin`
-- **Standart parol:** `urganch1imi2026`
+- **Login/parol:** `ADMIN_USERNAME` va `ADMIN_PASSWORD` muhit o'zgaruvchilarida belgilanadi.
 
 Admin panelida mavjud imkoniyatlar:
 - **Qabul arizalari:** Saytdan kelgan barcha arizalarni ko'rish, holatini o'zgartirish (Yangi, Ko'rib chiqilmoqda, Qabul qilindi, Rad etildi), o'chirish.
@@ -82,3 +81,21 @@ Admin panelida mavjud imkoniyatlar:
 │   └── types.ts          # TypeScript interfeyslari
 └── public/               # Rasmlar, hujjatlar va statik resurslar
 ```
+
+
+---
+
+## ☁️ Vercel'ga joylash (arizalar admin panelda ko'rinishi uchun)
+
+Vercel'da fayl tizimi faqat o'qish uchun, shuning uchun arizalar **Supabase** bazasida saqlanadi.
+
+1. [supabase.com](https://supabase.com) da bepul loyiha oching.
+2. **SQL Editor** ga `supabase/schema.sql` faylidagi kodni qo'yib **Run** bosing.
+3. **Project Settings → API** dan `Project URL` va `service_role` kalitini oling.
+4. Vercel → **Settings → Environment Variables** ga kiriting:
+   `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
+   (ixtiyoriy: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ADMIN_CHAT_ID`).
+5. **Deployments → Redeploy** qiling.
+6. `/admin/login` ga kiring; saytdan ariza yuboring — u **Qabul arizalari** bo'limida paydo bo'ladi.
+
+> Yangiliklar, o'qituvchilar va sertifikatlar `lib/data/*.json` fayllaridan o'qiladi. Ularni Vercel'da admin paneldan o'zgartirib bo'lmaydi (xabar chiqadi) — fayllarni GitHub'da yangilang.

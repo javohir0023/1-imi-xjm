@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { isAuthorized } from "@/lib/admin-auth"
 import { syncTelegramToDatabase, getTelegramSyncLog } from "@/lib/telegram"
 
 export async function GET(request: NextRequest) {
@@ -19,6 +20,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ success: false, message: "Ruxsat berilmagan" }, { status: 401 })
+  }
   try {
     const { searchParams } = new URL(request.url)
     const pages = parseInt(searchParams.get("pages") || "3", 10)

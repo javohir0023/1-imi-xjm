@@ -1059,19 +1059,7 @@
       "author": "Matbuot xizmati"
     }
   ],
-  "applications": [
-    {
-      "studentName": "jva a",
-      "parentName": "j",
-      "phone": "+99826151541514",
-      "grade": "5-sinf",
-      "region": "Urganch shahar",
-      "message": "zor",
-      "id": "app-1791307481464-p1xni",
-      "status": "yangi",
-      "createdAt": "2026-10-06T17:24:41.464Z"
-    }
-  ],
+  "applications": [],
   "contactMessages": [],
   "achievements": [
     {

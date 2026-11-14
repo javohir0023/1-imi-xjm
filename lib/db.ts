@@ -101,7 +101,7 @@ export function saveNewsItem(item: NewsItem): NewsItem {
   } else {
     db.news.unshift(item)
   }
-  saveDb(db)
+  if (!saveDb(db)) throw new StorageError(READONLY_MSG)
   return item
 }
 
@@ -110,51 +110,91 @@ export function deleteNewsItem(id: string): boolean {
   const initialLen = db.news.length
   db.news = db.news.filter((n) => n.id !== id)
   if (db.news.length !== initialLen) {
-    saveDb(db)
+    if (!saveDb(db)) throw new StorageError(READONLY_MSG)
     return true
   }
   return false
 }
 
+// ---------------------------------------------------------------------------
+// Doimiy saqlash (Applications + Contact messages)
+// Vercel'da fayl tizimi faqat o'qish uchun, shuning uchun arizalar Supabase'da saqlanadi.
+// Lokal (npm run dev) rejimda Supabase bo'lmasa, db.json'ga yoziladi.
+// ---------------------------------------------------------------------------
+export class StorageError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = "StorageError"
+  }
+}
+
+const READONLY_MSG =
+  "Vercel'da fayl tizimi faqat o'qish uchun: bu bo'lim (yangilik/o'qituvchi/sertifikat) o'zgarishlari saqlanmaydi. Ma'lumotni GitHub'dagi lib/data fayllarida yangilab, qayta deploy qiling."
+
+const IS_SERVERLESS = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME)
+
+function requireStorageMode(): "supabase" | "local" {
+  if (isSupabaseConfigured && supabase) return "supabase"
+  if (IS_SERVERLESS) {
+    throw new StorageError(
+      "Ma'lumotlar bazasi ulanmagan. Vercel'da NEXT_PUBLIC_SUPABASE_URL va SUPABASE_SERVICE_ROLE_KEY o'zgaruvchilarini kiriting va qayta deploy qiling.",
+    )
+  }
+  return "local"
+}
+
+function mapApplicationRow(row: any): ApplicationItem {
+  return {
+    id: row.id,
+    studentName: row.student_name ?? "",
+    parentName: row.parent_name ?? "",
+    phone: row.phone ?? "",
+    grade: row.grade ?? "5-sinf",
+    region: row.region ?? "Urganch shahar",
+    message: row.message ?? "",
+    status: row.status ?? "yangi",
+    createdAt: row.created_at ?? new Date().toISOString(),
+    updatedAt: row.updated_at ?? undefined,
+    notes: row.notes ?? "",
+  }
+}
+
+function mapMessageRow(row: any): ContactMessageItem {
+  return {
+    id: row.id,
+    name: row.name ?? "",
+    email: row.email ?? "",
+    phone: row.phone ?? "",
+    subject: row.subject ?? "",
+    message: row.message ?? "",
+    status: row.status ?? "yangi",
+    createdAt: row.created_at ?? new Date().toISOString(),
+    updatedAt: row.updated_at ?? undefined,
+  }
+}
+
+function dbError(action: string, message: string): StorageError {
+  console.error(`[Supabase] ${action}:`, message)
+  return new StorageError(`Bazaga murojaat xatosi (${action}): ${message}`)
+}
+
 // Applications functions
 export async function getApplications(): Promise<ApplicationItem[]> {
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const { data, error } = await supabase
-        .from("applications")
-        .select("*")
-        .order("created_at", { ascending: false })
-
-      if (!error && Array.isArray(data)) {
-        return data.map((row: any) => ({
-          id: row.id,
-          studentName: row.student_name ?? row.studentName ?? "",
-          parentName: row.parent_name ?? row.parentName ?? "",
-          phone: row.phone ?? "",
-          grade: row.grade ?? "5-sinf",
-          region: row.region ?? "Urganch shahar",
-          message: row.message ?? "",
-          status: row.status ?? "yangi",
-          createdAt: row.created_at ?? row.createdAt ?? new Date().toISOString(),
-          updatedAt: row.updated_at ?? row.updatedAt,
-          notes: row.notes ?? "",
-        }))
-      }
-      if (error) {
-        console.warn("[Supabase] Failed to fetch applications, falling back to local:", error.message)
-      }
-    } catch (err) {
-      console.warn("[Supabase] Applications fetch exception, falling back:", err)
-    }
+  if (requireStorageMode() === "supabase") {
+    const { data, error } = await supabase!
+      .from("applications")
+      .select("*")
+      .order("created_at", { ascending: false })
+    if (error) throw dbError("arizalarni o'qish", error.message)
+    return (data || []).map(mapApplicationRow)
   }
-
-  const db = getDb()
-  return db.applications || []
+  return getDb().applications || []
 }
 
 export async function addApplication(
-  app: Omit<ApplicationItem, "id" | "createdAt" | "status">
+  app: Omit<ApplicationItem, "id" | "createdAt" | "status">,
 ): Promise<ApplicationItem> {
+  const mode = requireStorageMode()
   const newItem: ApplicationItem = {
     ...app,
     id: "app-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7),
@@ -162,40 +202,27 @@ export async function addApplication(
     createdAt: new Date().toISOString(),
   }
 
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const { error } = await supabase.from("applications").insert({
-        id: newItem.id,
-        student_name: newItem.studentName,
-        parent_name: newItem.parentName,
-        phone: newItem.phone,
-        grade: newItem.grade,
-        region: newItem.region,
-        message: newItem.message || "",
-        status: newItem.status,
-        created_at: newItem.createdAt,
-        notes: newItem.notes || "",
-      })
-      if (error) {
-        console.error("[Supabase] Error saving application to Supabase:", error.message)
-      } else {
-        console.log(`[Supabase] Application successfully saved: ID=${newItem.id}`)
-      }
-    } catch (err) {
-      console.error("[Supabase] Insert application exception:", err)
-    }
+  if (mode === "supabase") {
+    const { error } = await supabase!.from("applications").insert({
+      id: newItem.id,
+      student_name: newItem.studentName,
+      parent_name: newItem.parentName,
+      phone: newItem.phone,
+      grade: newItem.grade,
+      region: newItem.region,
+      message: newItem.message || "",
+      status: newItem.status,
+      created_at: newItem.createdAt,
+      notes: newItem.notes || "",
+    })
+    if (error) throw dbError("arizani saqlash", error.message)
+    return newItem
   }
 
-  // Also save to local db for offline development if possible
-  try {
-    const db = getDb()
-    if (!db.applications) db.applications = []
-    db.applications.unshift(newItem)
-    saveDb(db)
-  } catch (err) {
-    // In serverless read-only environment, ignore local fs write errors
-  }
-
+  const db = getDb()
+  if (!db.applications) db.applications = []
+  db.applications.unshift(newItem)
+  if (!saveDb(db)) throw new StorageError("Arizani lokal faylga yozib bo'lmadi")
   return newItem
 }
 
@@ -204,42 +231,17 @@ export async function updateApplicationStatus(
   status: ApplicationItem["status"],
   notes?: string,
 ): Promise<ApplicationItem | null> {
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const updatePayload: Record<string, any> = {
-        status,
-        updated_at: new Date().toISOString(),
-      }
-      if (notes !== undefined) updatePayload.notes = notes
-
-      const { data, error } = await supabase
-        .from("applications")
-        .update(updatePayload)
-        .eq("id", id)
-        .select()
-        .single()
-
-      if (!error && data) {
-        return {
-          id: data.id,
-          studentName: data.student_name ?? data.studentName ?? "",
-          parentName: data.parent_name ?? data.parentName ?? "",
-          phone: data.phone ?? "",
-          grade: data.grade ?? "5-sinf",
-          region: data.region ?? "Urganch shahar",
-          message: data.message ?? "",
-          status: data.status ?? "yangi",
-          createdAt: data.created_at ?? data.createdAt,
-          updatedAt: data.updated_at ?? data.updatedAt,
-          notes: data.notes ?? "",
-        }
-      }
-      if (error) {
-        console.warn("[Supabase] Failed to update application:", error.message)
-      }
-    } catch (err) {
-      console.warn("[Supabase] Update application error:", err)
-    }
+  if (requireStorageMode() === "supabase") {
+    const payload: Record<string, any> = { status, updated_at: new Date().toISOString() }
+    if (notes !== undefined) payload.notes = notes
+    const { data, error } = await supabase!
+      .from("applications")
+      .update(payload)
+      .eq("id", id)
+      .select()
+      .maybeSingle()
+    if (error) throw dbError("arizani yangilash", error.message)
+    return data ? mapApplicationRow(data) : null
   }
 
   const db = getDb()
@@ -248,75 +250,42 @@ export async function updateApplicationStatus(
   app.status = status
   app.updatedAt = new Date().toISOString()
   if (notes !== undefined) app.notes = notes
-  try {
-    saveDb(db)
-  } catch {
-    // Ignore read-only fs error
-  }
+  saveDb(db)
   return app
 }
 
 export async function deleteApplication(id: string): Promise<boolean> {
-  let supabaseDeleted = false
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const { error } = await supabase.from("applications").delete().eq("id", id)
-      if (!error) supabaseDeleted = true
-      else console.warn("[Supabase] Delete application error:", error.message)
-    } catch (err) {
-      console.warn("[Supabase] Delete application exception:", err)
-    }
+  if (requireStorageMode() === "supabase") {
+    const { data, error } = await supabase!.from("applications").delete().eq("id", id).select("id")
+    if (error) throw dbError("arizani o'chirish", error.message)
+    return (data?.length ?? 0) > 0
   }
 
   const db = getDb()
-  const initialLen = db.applications.length
+  const before = db.applications.length
   db.applications = db.applications.filter((a) => a.id !== id)
-  if (db.applications.length !== initialLen) {
-    try {
-      saveDb(db)
-    } catch {}
-    return true
-  }
-  return supabaseDeleted
+  if (db.applications.length === before) return false
+  saveDb(db)
+  return true
 }
 
 // Contact Messages functions (Murojaatlar)
 export async function getContactMessages(): Promise<ContactMessageItem[]> {
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const { data, error } = await supabase
-        .from("contact_messages")
-        .select("*")
-        .order("created_at", { ascending: false })
-
-      if (!error && Array.isArray(data)) {
-        return data.map((row: any) => ({
-          id: row.id,
-          name: row.name,
-          email: row.email || "",
-          phone: row.phone || "",
-          subject: row.subject || "",
-          message: row.message || "",
-          status: row.status || "yangi",
-          createdAt: row.created_at || row.createdAt || new Date().toISOString(),
-          updatedAt: row.updated_at || row.updatedAt,
-        }))
-      }
-      if (error) {
-        console.warn("[Supabase] Failed to fetch contact messages:", error.message)
-      }
-    } catch (err) {
-      console.warn("[Supabase] Contact messages fetch exception:", err)
-    }
+  if (requireStorageMode() === "supabase") {
+    const { data, error } = await supabase!
+      .from("contact_messages")
+      .select("*")
+      .order("created_at", { ascending: false })
+    if (error) throw dbError("murojaatlarni o'qish", error.message)
+    return (data || []).map(mapMessageRow)
   }
-
-  const db = getDb()
-  return db.contactMessages || []
+  return getDb().contactMessages || []
 }
 
 export async function addContactMessage(
-  msg: Omit<ContactMessageItem, "id" | "createdAt" | "status">
+  msg: Omit<ContactMessageItem, "id" | "createdAt" | "status">,
 ): Promise<ContactMessageItem> {
+  const mode = requireStorageMode()
   const newItem: ContactMessageItem = {
     ...msg,
     id: "msg-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7),
@@ -324,35 +293,25 @@ export async function addContactMessage(
     createdAt: new Date().toISOString(),
   }
 
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const { error } = await supabase.from("contact_messages").insert({
-        id: newItem.id,
-        name: newItem.name,
-        email: newItem.email || "",
-        phone: newItem.phone || "",
-        subject: newItem.subject || "",
-        message: newItem.message,
-        status: newItem.status,
-        created_at: newItem.createdAt,
-      })
-      if (error) {
-        console.error("[Supabase] Error saving contact message:", error.message)
-      }
-    } catch (err) {
-      console.error("[Supabase] Insert contact message exception:", err)
-    }
+  if (mode === "supabase") {
+    const { error } = await supabase!.from("contact_messages").insert({
+      id: newItem.id,
+      name: newItem.name,
+      email: newItem.email || "",
+      phone: newItem.phone || "",
+      subject: newItem.subject || "",
+      message: newItem.message,
+      status: newItem.status,
+      created_at: newItem.createdAt,
+    })
+    if (error) throw dbError("murojaatni saqlash", error.message)
+    return newItem
   }
 
-  try {
-    const db = getDb()
-    if (!db.contactMessages) db.contactMessages = []
-    db.contactMessages.unshift(newItem)
-    saveDb(db)
-  } catch (err) {
-    // Ignore in serverless
-  }
-
+  const db = getDb()
+  if (!db.contactMessages) db.contactMessages = []
+  db.contactMessages.unshift(newItem)
+  if (!saveDb(db)) throw new StorageError("Murojaatni lokal faylga yozib bo'lmadi")
   return newItem
 }
 
@@ -360,67 +319,39 @@ export async function updateContactMessageStatus(
   id: string,
   status: ContactMessageItem["status"],
 ): Promise<ContactMessageItem | null> {
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const { data, error } = await supabase
-        .from("contact_messages")
-        .update({ status, updated_at: new Date().toISOString() })
-        .eq("id", id)
-        .select()
-        .single()
-
-      if (!error && data) {
-        return {
-          id: data.id,
-          name: data.name,
-          email: data.email || "",
-          phone: data.phone || "",
-          subject: data.subject || "",
-          message: data.message,
-          status: data.status,
-          createdAt: data.created_at,
-          updatedAt: data.updated_at,
-        }
-      }
-    } catch (err) {
-      console.warn("[Supabase] Error updating contact message:", err)
-    }
+  if (requireStorageMode() === "supabase") {
+    const { data, error } = await supabase!
+      .from("contact_messages")
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .select()
+      .maybeSingle()
+    if (error) throw dbError("murojaatni yangilash", error.message)
+    return data ? mapMessageRow(data) : null
   }
 
   const db = getDb()
-  if (!db.contactMessages) return null
-  const item = db.contactMessages.find((m) => m.id === id)
+  const item = (db.contactMessages || []).find((m) => m.id === id)
   if (!item) return null
   item.status = status
   item.updatedAt = new Date().toISOString()
-  try {
-    saveDb(db)
-  } catch {}
+  saveDb(db)
   return item
 }
 
 export async function deleteContactMessage(id: string): Promise<boolean> {
-  let supabaseDeleted = false
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const { error } = await supabase.from("contact_messages").delete().eq("id", id)
-      if (!error) supabaseDeleted = true
-    } catch (err) {
-      console.warn("[Supabase] Error deleting contact message:", err)
-    }
+  if (requireStorageMode() === "supabase") {
+    const { data, error } = await supabase!.from("contact_messages").delete().eq("id", id).select("id")
+    if (error) throw dbError("murojaatni o'chirish", error.message)
+    return (data?.length ?? 0) > 0
   }
 
   const db = getDb()
-  if (!db.contactMessages) return supabaseDeleted
-  const initialLen = db.contactMessages.length
-  db.contactMessages = db.contactMessages.filter((m) => m.id !== id)
-  if (db.contactMessages.length !== initialLen) {
-    try {
-      saveDb(db)
-    } catch {}
-    return true
-  }
-  return supabaseDeleted
+  const before = (db.contactMessages || []).length
+  db.contactMessages = (db.contactMessages || []).filter((m) => m.id !== id)
+  if (db.contactMessages.length === before) return false
+  saveDb(db)
+  return true
 }
 
 // Teachers functions
@@ -452,7 +383,7 @@ export function saveTeacher(item: TeacherItem): TeacherItem {
   } else {
     db.teachers.push(item)
   }
-  saveDb(db)
+  if (!saveDb(db)) throw new StorageError(READONLY_MSG)
 
   // Also update teachers.json if exists
   try {
@@ -476,7 +407,7 @@ export function deleteTeacher(id: number): boolean {
   const initialLen = db.teachers.length
   db.teachers = db.teachers.filter((t) => t.id !== id)
   if (db.teachers.length !== initialLen) {
-    saveDb(db)
+    if (!saveDb(db)) throw new StorageError(READONLY_MSG)
   }
 
   try {
@@ -519,6 +450,7 @@ export function saveCertificate(item: CertificateItem): CertificateItem {
     fs.writeFileSync(CERTIFICATES_JSON_PATH, JSON.stringify(list, null, 2), "utf-8")
   } catch (err) {
     console.error("[Certificates] Failed to save certificates.json:", err)
+    throw new StorageError(READONLY_MSG)
   }
   return item
 }
