@@ -3,7 +3,7 @@ import { isAuthorized } from "@/lib/admin-auth"
 import { syncTelegramToDatabase, getTelegramSyncLog } from "@/lib/telegram"
 
 export async function GET(request: NextRequest) {
-  const syncLog = getTelegramSyncLog()
+  const syncLog = await getTelegramSyncLog()
   const channel = (process.env.TELEGRAM_CHANNEL_ID || "Urganch_IMI").replace(/^@/, "")
 
   return NextResponse.json({

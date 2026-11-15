@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { type NextRequest, NextResponse, after } from "next/server"
 import { getNews, getNewsBySlug } from "@/lib/db"
 import { syncTelegramToDatabase, getTelegramSyncLog } from "@/lib/telegram"
 
@@ -17,27 +17,31 @@ export async function GET(request: NextRequest) {
 
   // Single post lookup
   if (slug) {
-    const item = getNewsBySlug(slug)
+    const item = await getNewsBySlug(slug)
     if (!item) {
       return NextResponse.json({ success: false, error: "News item not found" }, { status: 404 })
     }
     return NextResponse.json({ success: true, data: item })
   }
 
-  // Automatic background update from https://t.me/s/Urganch_IMI
-  // Triggers periodically if last sync was > 10 minutes ago
-  const syncLog = getTelegramSyncLog()
+  // Telegram kanalidan avtomatik yangilash: oxirgi sinxrondan 10 daqiqa o'tgan bo'lsa,
+  // javob yuborilgandan keyin (after) fonda yangi postlarni olamiz.
+  const syncLog = await getTelegramSyncLog()
   const timeSinceLastSync = Date.now() - new Date(syncLog.lastSync).getTime()
   if (timeSinceLastSync > AUTO_SYNC_INTERVAL_MS && !isSyncing) {
     isSyncing = true
-    syncTelegramToDatabase(2)
-      .catch((err) => console.error("[Auto Telegram Sync Error]:", err))
-      .finally(() => {
+    after(async () => {
+      try {
+        await syncTelegramToDatabase(2)
+      } catch (err) {
+        console.error("[Auto Telegram Sync Error]:", err)
+      } finally {
         isSyncing = false
-      })
+      }
+    })
   }
 
-  let news = getNews(status as any)
+  let news = await getNews(status as any)
 
   // Filter by category
   if (category && category !== "all") {

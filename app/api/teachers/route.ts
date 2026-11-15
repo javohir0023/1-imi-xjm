@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get("category") || "all"
     const search = searchParams.get("search")?.toLowerCase().trim() || ""
 
-    const allTeachers = getTeachers()
+    const allTeachers = await getTeachers()
 
     let filtered = allTeachers.filter((item) => {
       if (category !== "all" && item.category !== category) {

@@ -33,3 +33,36 @@ create index if not exists contact_messages_created_idx on public.contact_messag
 -- Faqat server (SUPABASE_SERVICE_ROLE_KEY) bu jadvallarga kira oladi.
 alter table public.applications     enable row level security;
 alter table public.contact_messages enable row level security;
+
+-- ===== Yangiliklar, o'qituvchilar, sinxron holati va rasmlar =====
+create table if not exists public.news (
+  id           text primary key,
+  data         jsonb not null,
+  status       text not null default 'published',
+  published_at timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+
+create table if not exists public.teachers (
+  id         integer primary key,
+  data       jsonb not null,
+  deleted    boolean not null default false,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.site_kv (
+  key        text primary key,
+  value      jsonb not null,
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists news_published_idx on public.news (published_at desc);
+
+alter table public.news     enable row level security;
+alter table public.teachers enable row level security;
+alter table public.site_kv  enable row level security;
+
+-- O'qituvchi rasmlari uchun ochiq (faqat o'qish) bucket
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('teacher-photos', 'teacher-photos', true, 3145728, array['image/jpeg','image/png','image/webp'])
+on conflict (id) do nothing;

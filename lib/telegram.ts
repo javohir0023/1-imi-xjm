@@ -1,7 +1,8 @@
 import fs from "fs"
 import path from "path"
 import { ApplicationItem, NewsItem } from "./types"
-import { saveNewsItem, getNews } from "./db"
+import { saveNewsItem, getNews, kvGet, kvSet } from "./db"
+import { isSupabaseConfigured } from "./supabase"
 
 // Server-side only Telegram integration
 export interface TelegramPost {
@@ -31,8 +32,12 @@ const LOG_FILE = path.join(process.cwd(), "lib", "data", "telegram-sync-log.json
 /**
  * Read the current Telegram sync log from disk
  */
-export function getTelegramSyncLog(): TelegramSyncLog {
+export async function getTelegramSyncLog(): Promise<TelegramSyncLog> {
   try {
+    if (isSupabaseConfigured) {
+      const stored = await kvGet<TelegramSyncLog>("telegram_sync_log")
+      if (stored) return stored
+    } else
     if (fs.existsSync(LOG_FILE)) {
       const content = fs.readFileSync(LOG_FILE, "utf-8")
       return JSON.parse(content)
@@ -54,8 +59,12 @@ export function getTelegramSyncLog(): TelegramSyncLog {
 /**
  * Save sync status and error logs
  */
-export function saveTelegramSyncLog(log: TelegramSyncLog) {
+export async function saveTelegramSyncLog(log: TelegramSyncLog) {
   try {
+    if (isSupabaseConfigured) {
+      await kvSet("telegram_sync_log", log)
+      return
+    }
     const dir = path.dirname(LOG_FILE)
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
     fs.writeFileSync(LOG_FILE, JSON.stringify(log, null, 2), "utf-8")
@@ -293,7 +302,7 @@ export async function syncTelegramToDatabase(maxPages = 3): Promise<{
   errors: string[]
 }> {
   const { posts, errors } = await fetchTelegramChannelPosts(maxPages)
-  const existingNews = getNews("all")
+  const existingNews = await getNews("all")
   let importedCount = 0
 
   for (const post of posts) {
@@ -308,7 +317,7 @@ export async function syncTelegramToDatabase(maxPages = 3): Promise<{
         existing.title = { uz: post.title, ru: post.title, en: post.title }
         existing.excerpt = { uz: post.excerpt, ru: post.excerpt, en: post.excerpt }
         existing.category = post.category
-        saveNewsItem(existing)
+        await saveNewsItem(existing)
       }
     } else if (post.text || post.imageUrl) {
       // New post: publish automatically!
@@ -341,16 +350,16 @@ export async function syncTelegramToDatabase(maxPages = 3): Promise<{
         author: "Urganch 1-IMI",
       }
 
-      saveNewsItem(newItem)
+      await saveNewsItem(newItem)
       importedCount++
     }
   }
 
   // Update sync log
-  saveTelegramSyncLog({
+  await saveTelegramSyncLog({
     lastSync: new Date().toISOString(),
     status: errors.length > 0 ? "error" : "success",
-    totalImported: getNews("all").filter((n) => n.telegramMessageId).length,
+    totalImported: (await getNews("all")).filter((n) => n.telegramMessageId).length,
     newItems: importedCount,
     lastCheckedPostId: posts[0]?.id,
     channelUrl: "https://t.me/s/Urganch_IMI",

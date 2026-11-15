@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
       { status: 401, headers: NO_CACHE_HEADERS },
     )
   }
-  const news = getNews("all")
+  const news = await getNews("all")
   return NextResponse.json(
     { success: true, data: news },
     { headers: NO_CACHE_HEADERS },
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
   }
   try {
     const item = await request.json()
-    const saved = saveNewsItem(item)
+    const saved = await saveNewsItem(item)
     return NextResponse.json(
       { success: true, data: saved },
       { headers: NO_CACHE_HEADERS },
@@ -50,7 +50,7 @@ export async function PUT(request: NextRequest) {
   }
   try {
     const item = await request.json()
-    const saved = saveNewsItem(item)
+    const saved = await saveNewsItem(item)
     return NextResponse.json(
       { success: true, data: saved },
       { headers: NO_CACHE_HEADERS },
@@ -79,7 +79,7 @@ export async function DELETE(request: NextRequest) {
     )
   }
   try {
-    const deleted = deleteNewsItem(id)
+    const deleted = await deleteNewsItem(id)
     return NextResponse.json({ success: deleted }, { headers: NO_CACHE_HEADERS })
   } catch (error: any) {
     return NextResponse.json(

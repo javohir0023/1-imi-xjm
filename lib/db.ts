@@ -81,31 +81,69 @@ export function saveDb(data: DatabaseSchema): boolean {
   }
 }
 
-// News functions
-export function getNews(status: "all" | "published" | "pending" = "published"): NewsItem[] {
-  const db = getDb()
-  if (status === "all") return db.news
-  return db.news.filter((n) => n.status === status)
+// ---------------------------------------------------------------------------
+// News: statik boshlang'ich yangiliklar (db.json) + Supabase'dagi `news` jadvali.
+// Jadvaldagi yozuv (Telegram'dan kelgan yoki admin tahrirlagan) statikni id bo'yicha almashtiradi.
+// ---------------------------------------------------------------------------
+async function loadAllNews(): Promise<NewsItem[]> {
+  const base = getDb().news || []
+  if (!(isSupabaseConfigured && supabase)) return base
+  const { data, error } = await supabase.from("news").select("data").limit(5000)
+  if (error) {
+    console.error("[Supabase] news o'qish:", error.message)
+    return base
+  }
+  const rows = (data || []).map((r: any) => r.data as NewsItem).filter(Boolean)
+  const ids = new Set(rows.map((r) => r.id))
+  return [...rows, ...base.filter((n) => !ids.has(n.id))]
 }
 
-export function getNewsBySlug(slug: string): NewsItem | undefined {
-  const db = getDb()
-  return db.news.find((n) => n.slug === slug || n.id === slug)
+export async function getNews(status: "all" | "published" | "pending" = "published"): Promise<NewsItem[]> {
+  const all = await loadAllNews()
+  if (status === "all") return all
+  return all.filter((n) => n.status === status)
 }
 
-export function saveNewsItem(item: NewsItem): NewsItem {
+export async function getNewsBySlug(slug: string): Promise<NewsItem | undefined> {
+  const all = await loadAllNews()
+  return all.find((n) => n.slug === slug || n.id === slug)
+}
+
+export async function saveNewsItem(item: NewsItem): Promise<NewsItem> {
+  if (isSupabaseConfigured && supabase) {
+    const d = new Date(item.publishedAt)
+    const { error } = await supabase.from("news").upsert({
+      id: item.id,
+      data: item,
+      status: item.status,
+      published_at: isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    if (error) throw dbError("yangilikni saqlash", error.message)
+    return item
+  }
   const db = getDb()
   const index = db.news.findIndex((n) => n.id === item.id)
-  if (index >= 0) {
-    db.news[index] = item
-  } else {
-    db.news.unshift(item)
-  }
+  if (index >= 0) db.news[index] = item
+  else db.news.unshift(item)
   if (!saveDb(db)) throw new StorageError(READONLY_MSG)
   return item
 }
 
-export function deleteNewsItem(id: string): boolean {
+export async function deleteNewsItem(id: string): Promise<boolean> {
+  if (isSupabaseConfigured && supabase) {
+    const existing = (await loadAllNews()).find((n) => n.id === id)
+    if (!existing) return false
+    const isStatic = (getDb().news || []).some((n) => n.id === id)
+    if (isStatic) {
+      // Statik yangilikni o'chirib bo'lmaydi: arxivga o'tkazib yashiramiz
+      await saveNewsItem({ ...existing, status: "archived" })
+    } else {
+      const { error } = await supabase.from("news").delete().eq("id", id)
+      if (error) throw dbError("yangilikni o'chirish", error.message)
+    }
+    return true
+  }
   const db = getDb()
   const initialLen = db.news.length
   db.news = db.news.filter((n) => n.id !== id)
@@ -358,70 +396,123 @@ export async function deleteContactMessage(id: string): Promise<boolean> {
 const TEACHERS_JSON_PATH = path.join(process.cwd(), "lib", "data", "teachers.json")
 const CERTIFICATES_JSON_PATH = path.join(process.cwd(), "lib", "data", "certificates.json")
 
-export function getTeachers(): TeacherItem[] {
+function readStaticTeachers(): TeacherItem[] {
   try {
     if (fs.existsSync(TEACHERS_JSON_PATH)) {
-      const raw = fs.readFileSync(TEACHERS_JSON_PATH, "utf-8")
-      const list = JSON.parse(raw) as TeacherItem[]
-      if (Array.isArray(list) && list.length > 0) {
-        return list
-      }
+      const list = JSON.parse(fs.readFileSync(TEACHERS_JSON_PATH, "utf-8")) as TeacherItem[]
+      if (Array.isArray(list) && list.length > 0) return list
     }
   } catch (err) {
-    console.warn("[Teachers] Failed to read teachers.json, falling back to db:", err)
+    console.warn("[Teachers] teachers.json o'qilmadi:", err)
   }
-
-  const db = getDb()
-  return db.teachers || []
+  return getDb().teachers || []
 }
 
-export function saveTeacher(item: TeacherItem): TeacherItem {
+// Statik ro'yxat (lib/data/teachers.json) + Supabase'dagi `teachers` jadvali (tahrirlar, yangilar, o'chirilganlar)
+export async function getTeachers(): Promise<TeacherItem[]> {
+  const base = readStaticTeachers()
+  if (!(isSupabaseConfigured && supabase)) return base
+  const { data, error } = await supabase.from("teachers").select("id, data, deleted").limit(5000)
+  if (error) {
+    console.error("[Supabase] teachers o'qish:", error.message)
+    return base
+  }
+  const rows = new Map<number, { data: TeacherItem; deleted: boolean }>()
+  for (const r of data || []) rows.set(r.id, { data: r.data as TeacherItem, deleted: !!r.deleted })
+  const result: TeacherItem[] = []
+  for (const t of base) {
+    const row = rows.get(t.id)
+    if (!row) result.push(t)
+    else if (!row.deleted) result.push({ ...t, ...row.data, id: t.id })
+  }
+  const baseIds = new Set(base.map((t) => t.id))
+  for (const [id, row] of rows) {
+    if (!baseIds.has(id) && !row.deleted) result.push({ ...row.data, id })
+  }
+  return result
+}
+
+export async function getNextTeacherId(): Promise<number> {
+  let max = readStaticTeachers().reduce((m, t) => Math.max(m, t.id), 0)
+  if (isSupabaseConfigured && supabase) {
+    const { data } = await supabase.from("teachers").select("id").order("id", { ascending: false }).limit(1)
+    if (data && data[0]) max = Math.max(max, data[0].id)
+  }
+  return max + 1
+}
+
+export async function saveTeacher(item: TeacherItem): Promise<TeacherItem> {
+  if (isSupabaseConfigured && supabase) {
+    const { error } = await supabase.from("teachers").upsert({
+      id: item.id,
+      data: item,
+      deleted: false,
+      updated_at: new Date().toISOString(),
+    })
+    if (error) throw dbError("o'qituvchini saqlash", error.message)
+    return item
+  }
   const db = getDb()
   const index = db.teachers.findIndex((t) => t.id === item.id)
-  if (index >= 0) {
-    db.teachers[index] = item
-  } else {
-    db.teachers.push(item)
-  }
+  if (index >= 0) db.teachers[index] = item
+  else db.teachers.push(item)
   if (!saveDb(db)) throw new StorageError(READONLY_MSG)
-
-  // Also update teachers.json if exists
   try {
     if (fs.existsSync(TEACHERS_JSON_PATH)) {
-      const raw = fs.readFileSync(TEACHERS_JSON_PATH, "utf-8")
-      const list = JSON.parse(raw) as TeacherItem[]
+      const list = JSON.parse(fs.readFileSync(TEACHERS_JSON_PATH, "utf-8")) as TeacherItem[]
       const idx = list.findIndex((t) => t.id === item.id)
       if (idx >= 0) list[idx] = item
       else list.push(item)
       fs.writeFileSync(TEACHERS_JSON_PATH, JSON.stringify(list, null, 2), "utf-8")
     }
   } catch (err) {
-    console.error("[Teachers] Failed to update teachers.json:", err)
+    console.error("[Teachers] teachers.json yangilanmadi:", err)
   }
-
   return item
 }
 
-export function deleteTeacher(id: number): boolean {
+export async function deleteTeacher(id: number): Promise<boolean> {
+  if (isSupabaseConfigured && supabase) {
+    const current = (await getTeachers()).find((t) => t.id === id)
+    if (!current) return false
+    const { error } = await supabase.from("teachers").upsert({
+      id,
+      data: current,
+      deleted: true,
+      updated_at: new Date().toISOString(),
+    })
+    if (error) throw dbError("o'qituvchini o'chirish", error.message)
+    return true
+  }
   const db = getDb()
   const initialLen = db.teachers.length
   db.teachers = db.teachers.filter((t) => t.id !== id)
-  if (db.teachers.length !== initialLen) {
-    if (!saveDb(db)) throw new StorageError(READONLY_MSG)
-  }
-
+  if (db.teachers.length !== initialLen && !saveDb(db)) throw new StorageError(READONLY_MSG)
   try {
     if (fs.existsSync(TEACHERS_JSON_PATH)) {
-      const raw = fs.readFileSync(TEACHERS_JSON_PATH, "utf-8")
-      let list = JSON.parse(raw) as TeacherItem[]
+      let list = JSON.parse(fs.readFileSync(TEACHERS_JSON_PATH, "utf-8")) as TeacherItem[]
       list = list.filter((t) => t.id !== id)
       fs.writeFileSync(TEACHERS_JSON_PATH, JSON.stringify(list, null, 2), "utf-8")
     }
   } catch (err) {
-    console.error("[Teachers] Failed to delete from teachers.json:", err)
+    console.error("[Teachers] teachers.json'dan o'chirilmadi:", err)
   }
-
   return true
+}
+
+// Kichik kalit-qiymat saqlash (Telegram sinxronlash holati uchun)
+export async function kvGet<T>(key: string): Promise<T | null> {
+  if (!(isSupabaseConfigured && supabase)) return null
+  const { data } = await supabase.from("site_kv").select("value").eq("key", key).maybeSingle()
+  return (data?.value as T) ?? null
+}
+
+export async function kvSet(key: string, value: unknown): Promise<void> {
+  if (!(isSupabaseConfigured && supabase)) return
+  const { error } = await supabase
+    .from("site_kv")
+    .upsert({ key, value, updated_at: new Date().toISOString() })
+  if (error) console.error("[Supabase] site_kv yozish:", error.message)
 }
 
 // Student Certificates Archive functions (Excel import + 23.10 ERP data)

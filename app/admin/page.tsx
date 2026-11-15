@@ -34,6 +34,8 @@ import {
   AlertTriangle,
   BookOpen,
   Layers,
+  Pencil,
+  ImagePlus,
 } from "lucide-react"
 import { NewsItem, ApplicationItem, ContactMessageItem, CertificateItem, TeacherItem } from "@/lib/types"
 
@@ -71,7 +73,7 @@ export default function AdminDashboardPage() {
   const [teacherSearch, setTeacherSearch] = useState("")
   const [teacherCategoryFilter, setTeacherCategoryFilter] = useState("all")
   const [newTeacherModal, setNewTeacherModal] = useState(false)
-  const [newTeacherData, setNewTeacherData] = useState({
+  const EMPTY_TEACHER = {
     nameUz: "",
     positionUz: "",
     subjectUz: "",
@@ -79,7 +81,11 @@ export default function AdminDashboardPage() {
     degree: "",
     section: "Asosiy o'qituvchilar",
     category: "science" as TeacherItem["category"],
-  })
+    image: "" as string,
+  }
+  const [newTeacherData, setNewTeacherData] = useState(EMPTY_TEACHER)
+  const [editingTeacherId, setEditingTeacherId] = useState<number | null>(null)
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
   const [isSubmittingTeacher, setIsSubmittingTeacher] = useState(false)
 
   // Applications Filters & Search
@@ -247,6 +253,74 @@ export default function AdminDashboardPage() {
   }
 
   // Teacher Actions
+  const openNewTeacher = () => {
+    setEditingTeacherId(null)
+    setNewTeacherData(EMPTY_TEACHER)
+    setNewTeacherModal(true)
+  }
+
+  const openEditTeacher = (t: TeacherItem) => {
+    setEditingTeacherId(t.id)
+    setNewTeacherData({
+      nameUz: t.nameUz || "",
+      positionUz: t.positionUz || "",
+      subjectUz: t.subjectUz || "",
+      qualification: t.qualification || "Oliy toifa",
+      degree: t.degree || "",
+      section: t.section || "Asosiy o'qituvchilar",
+      category: t.category || "science",
+      image: t.image || "",
+    })
+    setNewTeacherModal(true)
+  }
+
+  // Rasmni brauzerda kichraytirib (maks. 900px, JPEG) serverga yuklaymiz
+  const resizeImage = (file: File): Promise<Blob> =>
+    new Promise((resolve, reject) => {
+      const img = new window.Image()
+      const url = URL.createObjectURL(file)
+      img.onload = () => {
+        const max = 900
+        const scale = Math.min(1, max / Math.max(img.width, img.height))
+        const canvas = document.createElement("canvas")
+        canvas.width = Math.round(img.width * scale)
+        canvas.height = Math.round(img.height * scale)
+        const ctx = canvas.getContext("2d")
+        if (!ctx) return reject(new Error("Rasmni qayta ishlab bo'lmadi"))
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        URL.revokeObjectURL(url)
+        canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Rasmni qayta ishlab bo'lmadi"))), "image/jpeg", 0.85)
+      }
+      img.onerror = () => {
+        URL.revokeObjectURL(url)
+        reject(new Error("Bu fayl rasm emas"))
+      }
+      img.src = url
+    })
+
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ""
+    if (!file) return
+    setIsUploadingPhoto(true)
+    try {
+      const blob = await resizeImage(file)
+      const fd = new FormData()
+      fd.append("file", new File([blob], "photo.jpg", { type: "image/jpeg" }))
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd })
+      const data = await res.json()
+      if (data.success) {
+        setNewTeacherData((prev) => ({ ...prev, image: data.url }))
+      } else {
+        alert(data.error || "Rasmni yuklashda xatolik")
+      }
+    } catch (err: any) {
+      alert(err?.message || "Rasmni yuklashda xatolik")
+    } finally {
+      setIsUploadingPhoto(false)
+    }
+  }
+
   const handleCreateTeacher = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newTeacherData.nameUz || !newTeacherData.positionUz) {
@@ -255,27 +329,25 @@ export default function AdminDashboardPage() {
     }
     setIsSubmittingTeacher(true)
     try {
+      const isEdit = editingTeacherId !== null
       const res = await fetch("/api/admin/teachers", {
-        method: "POST",
+        method: isEdit ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newTeacherData),
+        body: JSON.stringify(isEdit ? { ...newTeacherData, id: editingTeacherId } : newTeacherData),
       })
       const data = await res.json()
       if (data.success) {
-        setStatusMessage(`Yangi o'qituvchi muvaffaqiyatli saqlandi: ${newTeacherData.nameUz}`)
+        setStatusMessage(
+          isEdit
+            ? `Ma'lumotlar yangilandi: ${newTeacherData.nameUz}`
+            : `Yangi o'qituvchi muvaffaqiyatli saqlandi: ${newTeacherData.nameUz}`,
+        )
         setNewTeacherModal(false)
-        setNewTeacherData({
-          nameUz: "",
-          positionUz: "",
-          subjectUz: "",
-          qualification: "Oliy toifa",
-          degree: "",
-          section: "Asosiy o'qituvchilar",
-          category: "science",
-        })
+        setEditingTeacherId(null)
+        setNewTeacherData(EMPTY_TEACHER)
         await loadTeachers()
       } else {
-        alert(data.error || "Xatolik yuz berdi")
+        alert(data.error || data.message || "Xatolik yuz berdi")
       }
     } catch {
       alert("O'qituvchini saqlashda xatolik")
@@ -1121,7 +1193,7 @@ export default function AdminDashboardPage() {
                   <span>Yangilash</span>
                 </button>
                 <button
-                  onClick={() => setNewTeacherModal(true)}
+                  onClick={openNewTeacher}
                   className="px-4 py-2 bg-[#0B1F3A] hover:bg-[#123B66] dark:bg-[#C9A227] dark:hover:bg-[#d8b030] text-white dark:text-[#0B1F3A] text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 shadow-xs"
                 >
                   <Plus size={14} />
@@ -1217,13 +1289,22 @@ export default function AdminDashboardPage() {
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => handleDeleteTeacher(t.id, t.nameUz)}
-                      className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors flex-shrink-0"
-                      title="O'chirish"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                    <div className="flex flex-col gap-1 flex-shrink-0">
+                      <button
+                        onClick={() => openEditTeacher(t)}
+                        className="p-1.5 text-slate-400 hover:text-[#0B1F3A] hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-[#C9A227] rounded-lg transition-colors"
+                        title="Tahrirlash"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteTeacher(t.id, t.nameUz)}
+                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors"
+                        title="O'chirish"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </div>
                 ))}
             </div>
@@ -1930,10 +2011,10 @@ export default function AdminDashboardPage() {
             <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="font-bold text-base text-[#0B1F3A] dark:text-white flex items-center gap-2">
                 <GraduationCap size={18} className="text-[#C9A227]" />
-                <span>Yangi O'qituvchi / Xodim Qo'shish</span>
+                <span>{editingTeacherId !== null ? "O'qituvchi / Xodimni Tahrirlash" : "Yangi O'qituvchi / Xodim Qo'shish"}</span>
               </h3>
               <button
-                onClick={() => setNewTeacherModal(false)}
+                onClick={() => { setNewTeacherModal(false); setEditingTeacherId(null) }}
                 className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
               >
                 <X size={18} />
@@ -1941,6 +2022,43 @@ export default function AdminDashboardPage() {
             </div>
 
             <form onSubmit={handleCreateTeacher} className="space-y-4">
+              <div className="flex items-center gap-4">
+                {newTeacherData.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={newTeacherData.image}
+                    alt="Rasm"
+                    className="w-20 h-20 rounded-xl object-cover border border-slate-200 dark:border-slate-700"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 border border-dashed border-slate-300 dark:border-slate-600">
+                    <ImagePlus size={24} />
+                  </div>
+                )}
+                <div className="space-y-1.5">
+                  <label className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold rounded-lg cursor-pointer">
+                    <ImagePlus size={14} />
+                    <span>{isUploadingPhoto ? "Yuklanmoqda..." : newTeacherData.image ? "Rasmni almashtirish" : "Rasm yuklash"}</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      disabled={isUploadingPhoto}
+                      onChange={handlePhotoSelect}
+                    />
+                  </label>
+                  {newTeacherData.image && (
+                    <button
+                      type="button"
+                      onClick={() => setNewTeacherData({ ...newTeacherData, image: "" })}
+                      className="block text-[11px] text-red-600 hover:underline"
+                    >
+                      Rasmni olib tashlash
+                    </button>
+                  )}
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   F.I.Sh. *
@@ -2021,14 +2139,14 @@ export default function AdminDashboardPage() {
               <div className="pt-2 flex justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setNewTeacherModal(false)}
+                  onClick={() => { setNewTeacherModal(false); setEditingTeacherId(null) }}
                   className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-xs font-bold rounded-lg"
                 >
                   Bekor qilish
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmittingTeacher}
+                  disabled={isSubmittingTeacher || isUploadingPhoto}
                   className="px-4 py-2 bg-[#0B1F3A] hover:bg-[#123B66] dark:bg-[#C9A227] dark:hover:bg-[#d8b030] text-white dark:text-[#0B1F3A] text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 disabled:opacity-50"
                 >
                   <Plus size={14} />
